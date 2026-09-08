@@ -1,0 +1,489 @@
+% Original CSC302 teaching adaptation of Heather Macbeth, The Mechanics of Proof.
+% Source: https://hrmacbeth.github.io/math2001/05_Logic.html
+% Source snapshot: e660f42b13ddcb6d12b52ba036d6bd071a0cfb9b (Lean 4.3).
+% All teaching prose and tables are original; mathematical source locations below.
+% Lean snippets are demonstrations in the textbook environment, not build-verified.
+\input{preamble.tex}
+\coursechapter{5}{Logic}
+\begin{document}
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}{What you should be able to do}
+\begin{itemize}
+\item Check a propositional formula with a truth table and prove a logical equivalence.
+\item Track how quantifier order controls the dependence of witnesses.
+\item Use excluded middle without first deciding which case is true.
+\item Move negations through connectives and quantifiers correctly.
+\item Turn a negative statement into a concrete proof task.
+\end{itemize}
+\begin{block}{Three levels of reasoning}
+Truth tables analyze propositions. Quantifiers introduce objects. Mathematics supplies facts about those objects.
+\end{block}
+Lean fragments use the textbook's educational tactic environment.
+\sourcecredit{Chapter 5, Sections 5.1--5.3}
+\end{frame}
+
+\section{5.1 Logical equivalence}
+% Section 5.1, Examples 5.1.1--5.1.2 and Exercise 5.1.3.
+\begin{frame}{5.1: The connectives and their truth conditions}
+Let $P$ and $Q$ be propositions.
+\begin{center}
+\begin{tabular}{cc|ccccc}
+\toprule
+$P$&$Q$&$\neg P$&$P\land Q$&$P\lor Q$&$P\to Q$&$P\leftrightarrow Q$\\\midrule
+T&T&F&T&T&T&T\\
+T&F&F&F&T&F&F\\
+F&T&T&F&T&T&F\\
+F&F&T&F&F&T&T\\\bottomrule
+\end{tabular}
+\end{center}
+\begin{block}{The one false implication case}
+$P\to Q$ fails exactly when $P$ is true and $Q$ is false.
+When $P$ is false, there is no instance of $P$ that violates the implication.
+\end{block}
+\sourcecredit{Section 5.1, Example 5.1.2 and Exercise 5.1.3}
+\end{frame}
+
+% Exercise 5.1.3. Table independently computed.
+\begin{frame}{Build a compound truth table from the inside out}
+Consider $P\leftrightarrow(\neg P\lor Q)$.
+\begin{center}
+\begin{tabular}{cc|c|c|c}
+\toprule
+$P$&$Q$&$\neg P$&$\neg P\lor Q$&$P\leftrightarrow(\neg P\lor Q)$\\\midrule
+T&T&F&T&T\\
+T&F&F&F&F\\
+F&T&T&T&F\\
+F&F&T&T&F\\\bottomrule
+\end{tabular}
+\end{center}
+Compute $\neg P$ first, then the disjunction, then the equivalence.
+The final column matches $P\land Q$.
+\begin{block}{Check versus explanation}
+For propositional formulas, matching truth tables establishes classical equivalence. A structural proof explains how to convert a proof in each direction.
+\end{block}
+\sourcecredit{Section 5.1, Exercise 5.1.3 and Example 5.1.5}
+\end{frame}
+
+% Example 5.1.4.
+\begin{frame}[fragile]{Logical equivalence means mutual implication}
+Two statements $A$ and $B$ are logically equivalent when $A\leftrightarrow B$.
+For example, $(P\lor P)\leftrightarrow P$.
+\begin{lstlisting}
+-- Demonstration: every branch of the disjunction gives P.
+example (P : Prop) : Iff (Or P P) P := by
+  constructor
+  . intro h
+    obtain h1 | h2 := h
+    . exact h1
+    . exact h2
+  . intro h
+    left
+    exact h
+\end{lstlisting}
+\sourcecredit{Section 5.1, Example 5.1.4; ASCII teaching adaptation}
+\end{frame}
+
+% Example 5.1.5.
+\begin{frame}{Distributing a conjunction over a disjunction}
+\[
+P\land(Q\lor R)\quad\Longleftrightarrow\quad
+(P\land Q)\lor(P\land R).
+\]
+\begin{columns}[T]
+\begin{column}{.47\textwidth}
+\begin{block}{Forward}
+We have $P$ and either $Q$ or $R$.
+\begin{itemize}
+\item If $Q$, build $P\land Q$ and choose the left alternative.
+\item If $R$, build $P\land R$ and choose the right alternative.
+\end{itemize}
+\end{block}
+\end{column}
+\begin{column}{.47\textwidth}
+\begin{block}{Backward}
+Split the given disjunction.
+\begin{itemize}
+\item From $P\land Q$, keep $P$ and introduce $Q\lor R$ on the left.
+\item From $P\land R$, keep $P$ and introduce $Q\lor R$ on the right.
+\end{itemize}
+\end{block}
+\end{column}
+\end{columns}
+\sourcecredit{Section 5.1, Example 5.1.5}
+\end{frame}
+
+% Example 5.1.6; converse counterexample is an original extension.
+\begin{frame}{A common witness works for every input}
+Let $X,Y$ be types and let $P(x,y)$ be a proposition for $x\in X$, $y\in Y$.
+\[
+(\exists x\in X,\ \forall y\in Y,\ P(x,y))
+\quad\Longrightarrow\quad
+(\forall y\in Y,\ \exists x\in X,\ P(x,y)).
+\]
+\begin{enumerate}
+\item Obtain a witness $x_0$ that works for every $y$.
+\item Fix an arbitrary $y$.
+\item Use that same $x_0$; the universal hypothesis gives $P(x_0,y)$.
+\end{enumerate}
+The converse can fail. Over $\Z$, take $P(x,y)$ to mean $x>y$.
+For each $y$, $x=y+1$ works; no one integer is greater than every integer.
+\sourcecredit{Section 5.1, Example 5.1.6; converse counterexample is an extension}
+\end{frame}
+
+% Example 5.1.6.
+\begin{frame}{Negating existence: two direct implications}
+\[
+\neg\exists x\in A,\ P(x)\quad\Longleftrightarrow\quad
+\forall x\in A,\ \neg P(x).
+\]
+\begin{block}{Forward}
+Assume no witness exists. For an arbitrary $a\in A$, if $P(a)$ held, $a$ would be a witness. Thus $\neg P(a)$.
+\end{block}
+\begin{block}{Backward}
+Assume every $a\in A$ fails $P$. If a witness $w$ existed, we would have both $P(w)$ and $\neg P(w)$.
+\end{block}
+This equivalence also holds when $A$ is empty. No choice of a default element is needed.
+\sourcecredit{Section 5.1, Example 5.1.6}
+\end{frame}
+
+% Exercises 5.1.7, idempotence, De Morgan, and transport of exists.
+\begin{frame}{5.1 Practice: build both conversions}
+\begin{enumerate}
+\item Prove $(P\land P)\leftrightarrow P$.
+\item Prove $\neg(P\lor Q)\leftrightarrow(\neg P\land\neg Q)$.
+\item Suppose $\forall x\in A,\ P(x)\leftrightarrow Q(x)$. Prove
+\[
+(\exists x\in A,\ P(x))\leftrightarrow(\exists x\in A,\ Q(x)).
+\]
+\end{enumerate}
+In item 3, must the witness change when you convert the statement?
+\sourcecredit{Section 5.1, Exercises 5.1.7}
+\end{frame}
+
+\begin{frame}{5.1 Solution ideas}
+\begin{enumerate}
+\item Forward: keep one copy of $P$. Backward: use the proof of $P$ twice to build $P\land P$.
+\item Forward: a proof of either $P$ or $Q$ would give the forbidden disjunction. Backward: split a hypothetical $P\lor Q$; each branch contradicts the corresponding negation.
+\item Forward: obtain $w$ and $P(w)$, apply the forward implication at $w$, and keep $w$ as the witness for $Q$. Backward: use the reverse implication at the same witness.
+\end{enumerate}
+The common structure is to unpack the given statement and rebuild the target.
+\sourcecredit{Section 5.1, Exercises 5.1.7}
+\end{frame}
+
+\section{5.2 The law of the excluded middle}
+% Section 5.2, Examples 5.2.5 and 5.2.6.
+\begin{frame}{5.2: A case split need not decide the proposition}
+\begin{block}{Law of the excluded middle}
+For every proposition $P$, we may reason by the two cases $P$ and $\neg P$.
+\end{block}
+To prove a target $Q$:
+\begin{enumerate}
+\item Assume $P$ and prove $Q$.
+\item Assume $\neg P$ and prove $Q$.
+\item Conclude $Q$, because the cases cover all possibilities.
+\end{enumerate}
+In Lean, \texttt{by\_cases h : P} creates these two branches.
+This is a classical logical principle, not an algorithm for deciding arbitrary propositions.
+\sourcecredit{Section 5.2, Examples 5.2.5 and 5.2.6}
+\end{frame}
+
+% Definition in Section 5.2 and Examples 5.2.1--5.2.4.
+\begin{frame}{A predicate with easy endpoints and a difficult middle}
+Following the textbook, call $k\in\N$ \emph{superpowered} when
+\[
+S(k):\quad\forall n\in\N,\quad k^{\,k^n}+1\text{ is prime}.
+\]
+Exponentiation is grouped as $k^{(k^n)}$; the convention is $k^0=1$.
+\begin{center}
+\begin{tabular}{cll}
+\toprule
+$k$ & Useful calculation & Conclusion\\\midrule
+$0$ & $0^{0^0}+1=1$ & $\neg S(0)$\\
+$1$ & $1^{1^n}+1=2$ for every $n$ & $S(1)$\\
+$3$ & $3^{3^0}+1=4$ & $\neg S(3)$\\\bottomrule
+\end{tabular}
+\end{center}
+For $k=2$, the first values are $3,5,17,257,65537$. A finite list of successes does not prove $S(2)$.
+\sourcecredit{Section 5.2, Examples 5.2.1--5.2.4}
+\end{frame}
+
+% Example 5.2.5.
+\begin{frame}{Prove a boundary exists without locating it first}
+We know $S(1)$ and $\neg S(3)$. Prove
+\[
+\exists k\in\N,\quad S(k)\land\neg S(k+1).
+\]
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Case & Choose & Why it works\\\midrule
+$S(2)$ & $k=2$ & $S(2)$ and $\neg S(3)$\\[2mm]
+$\neg S(2)$ & $k=1$ & $S(1)$ and $\neg S(2)$\\\bottomrule
+\end{tabular}
+\end{center}
+Both cases produce a witness. This argument proves existence even before we determine which case holds.
+\sourcecredit{Section 5.2, Example 5.2.5}
+\end{frame}
+
+\begin{frame}[fragile]{The same boundary argument in abstract Lean}
+\begin{lstlisting}
+-- Demonstration: the argument uses only S 1 and Not (S 3).
+example (S : Nat -> Prop) (h1 : S 1) (h3 : Not (S 3)) :
+    Exists (fun k => And (S k) (Not (S (k + 1)))) := by
+  by_cases h2 : S 2
+  . use 2
+    constructor
+    . exact h2
+    . exact h3
+  . use 1
+    constructor
+    . exact h1
+    . exact h2
+\end{lstlisting}
+The logical structure does not depend on the arithmetic inside $S$.
+\sourcecredit{Section 5.2, Example 5.2.5; abstract teaching adaptation}
+\end{frame}
+
+% Example 5.2.6 and Exercises 5.2.7 (contraposition).
+\begin{frame}{Double negation and contraposition}
+\begin{block}{Double negation elimination}
+Given $\neg\neg P$, split into $P$ or $\neg P$. The first case proves $P$ directly. The second contradicts $\neg\neg P$. Thus $P$ follows classically.
+\end{block}
+\begin{block}{Contraposition}
+\[
+(P\to Q)\quad\Longleftrightarrow\quad(\neg Q\to\neg P).
+\]
+Forward: assuming $\neg Q$ and $P$, the implication supplies the forbidden $Q$.
+Backward: assume $P$. If $Q$ failed, the contrapositive would give $\neg P$; hence $Q$ holds by classical reasoning.
+\end{block}
+The forward implication is direct; the reverse uses double negation elimination.
+\sourcecredit{Section 5.2, Example 5.2.6 and Exercises 5.2.7}
+\end{frame}
+
+% Exercises 5.2.7, contraposition and Euler factorization.
+\begin{frame}{5.2 Practice: identify the classical step}
+\begin{enumerate}
+\item From $\neg P\to\neg Q$ and $Q$, prove $P$. Show explicitly where excluded middle is used.
+\item You are given the exact factorization
+\[
+2^{2^5}+1=4294967297=641\cdot6700417.
+\]
+Use it to select a concrete $k$ satisfying $S(k)\land\neg S(k+1)$, where $S$ is the superpowered predicate.
+\end{enumerate}
+Why are five prime values insufficient to establish a universal statement?
+\sourcecredit{Section 5.2, Exercises 5.2.7}
+\end{frame}
+
+\begin{frame}{5.2 Solution ideas}
+\begin{enumerate}
+\item Split into $P$ and $\neg P$. In the first case, we are done. In the second, the given implication produces $\neg Q$, contradicting $Q$. Excluded middle licenses that case split.
+\item The value at $n=5$ has a nontrivial factor $641$, so $\neg S(2)$. We already know $S(1)$; therefore choose $k=1$.
+\end{enumerate}
+\begin{block}{What a counterexample must provide}
+To refute $\forall n,\ P(n)$, one failing input is enough. To prove it, checking a fixed finite sample is generally insufficient.
+\end{block}
+\sourcecredit{Section 5.2, Exercises 5.2.7}
+\end{frame}
+
+\section{5.3 Normal form for negations}
+% Section 5.3, Example 5.3.1 and Table 5.1.
+\begin{frame}{5.3: Push negations through propositional operations}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Original & Equivalent form & Textbook Lean lemma\\\midrule
+$\neg\neg P$ & $P$ & \texttt{not\_not}\\[2mm]
+$\neg(P\lor Q)$ & $\neg P\land\neg Q$ & \texttt{not\_or}\\[2mm]
+$\neg(P\land Q)$ & $\neg P\lor\neg Q$ & \texttt{not\_and\_or}\\[2mm]
+$\neg(P\to Q)$ & $P\land\neg Q$ & \texttt{not\_imp}\\\bottomrule
+\end{tabular}
+\end{center}
+\begin{block}{Interpret the last row}
+An implication fails when its premise holds and its conclusion fails. Negating an implication does \emph{not} negate both sides.
+\end{block}
+These are classical equivalences; some directions require excluded middle.
+\sourcecredit{Section 5.3, Table 5.1}
+\end{frame}
+
+% Table 5.1 and Examples 5.3.2--5.3.4.
+\begin{frame}{Negating quantifiers changes who chooses the object}
+\[
+\neg\exists x\in A,\ P(x)\quad\Longleftrightarrow\quad
+\forall x\in A,\ \neg P(x),
+\]
+\[
+\neg\forall x\in A,\ P(x)\quad\Longleftrightarrow\quad
+\exists x\in A,\ \neg P(x).
+\]
+\begin{itemize}
+\item No witness works $\Rightarrow$ every candidate fails.
+\item Not every candidate works $\Rightarrow$ there is a counterexample.
+\end{itemize}
+For ordered numbers, also use
+\[
+\neg(a<b)\Longleftrightarrow b\le a,\qquad
+\neg(a\le b)\Longleftrightarrow b<a.
+\]
+The domain of each quantifier stays the same throughout the transformation.
+\sourcecredit{Section 5.3, Table 5.1 and Example 5.3.3}
+\end{frame}
+
+% Example 5.3.2.
+\begin{frame}{Normalize one connective at a time}
+Start with
+\[
+\neg\bigl(\forall m\in\Z,\ m\ne2\Rightarrow\exists n\in\Z,\ n^2=m\bigr).
+\]
+\begin{enumerate}
+\item Negate the universal quantifier:
+\[
+\exists m\in\Z,\ \neg\bigl(m\ne2\Rightarrow\exists n\in\Z,\ n^2=m\bigr).
+\]
+\item Negate the implication:
+\[
+\exists m\in\Z,\ m\ne2\land\neg\exists n\in\Z,\ n^2=m.
+\]
+\item Negate the existential quantifier:
+\[
+\exists m\in\Z,\ m\ne2\land\forall n\in\Z,\ n^2\ne m.
+\]
+\end{enumerate}
+\sourcecredit{Section 5.3, Example 5.3.2}
+\end{frame}
+
+% Example 5.3.1.
+\begin{frame}{Why negating ``and'' requires a case split}
+Prove $\neg(P\land Q)\Rightarrow\neg P\lor\neg Q$.
+\begin{enumerate}
+\item Suppose $\neg(P\land Q)$.
+\item By excluded middle, either $P$ or $\neg P$.
+\item If $\neg P$, choose the left alternative.
+\item If $P$, show $\neg Q$: an assumed $Q$ would combine with $P$ to give the forbidden $P\land Q$. Choose the right alternative.
+\end{enumerate}
+Conversely, if either $P$ or $Q$ is false, they cannot both hold.
+\begin{block}{Lean connection}
+Use \texttt{constructor}, then \texttt{by\_cases hP : P} in the forward direction; use \texttt{obtain} in the reverse direction.
+\end{block}
+\sourcecredit{Section 5.3, Example 5.3.1}
+\end{frame}
+
+% Example 5.3.3.
+\begin{frame}{A chained inequality hides a conjunction}
+The statement $n^2<m<(n+1)^2$ means
+\[
+n^2<m\ \land\ m<(n+1)^2.
+\]
+Therefore
+\[
+\neg\bigl(\forall n\in\Z,\ \exists m\in\Z,\ n^2<m<(n+1)^2\bigr)
+\]
+is equivalent to
+\[
+\exists n\in\Z,\ \forall m\in\Z,\quad
+m\le n^2\ \lor\ (n+1)^2\le m.
+\]
+To \emph{prove} the resulting statement, choose $n=0$. Every integer $m$ satisfies $m\le0$ or $1\le m$.
+\sourcecredit{Section 5.3, Example 5.3.3; witness proof is an extension}
+\end{frame}
+
+% Examples 5.3.4--5.3.5; Exercise 5.3.6 revisiting 4.5.1.
+\begin{frame}[fragile]{Normalize first, then supply the mathematical idea}
+\begin{lstlisting}
+-- Demonstration in the textbook's tactic environment.
+example : Not (forall x : Real, x ^ 2 >= x) := by
+  push_neg
+  use (1 / 2 : Real)
+  numbers
+\end{lstlisting}
+After \texttt{push\_neg}, the goal asks for a real $x$ with $x^2<x$.
+The tactic exposes the witness obligation; the choice $x=\tfrac12$ is the mathematical step.
+\begin{block}{What normalization does}
+It changes the form of the statement by equivalences. It does not automatically find the counterexample or prove the resulting inequality.
+\end{block}
+\sourcecredit{Section 5.3, Example 5.3.4 and Exercises 5.3.6}
+\end{frame}
+
+% Exercises 5.3.6, negation normalizations concerning products and upper bounds.
+\begin{frame}{5.3 Practice: normalize, then prove or refute}
+\begin{enumerate}
+\item Move all negations inward:
+\[
+\neg\bigl(\forall a,b\in\Z,\ ab=1\Rightarrow(a=1\lor b=1)\bigr).
+\]
+Then decide whether the statement is true.
+\item Normalize
+\[
+\neg\bigl(\exists x\in\R,\ \forall y\in\R,\ y\le x\bigr),
+\]
+and prove the normalized statement.
+\end{enumerate}
+Keep the variable domains visible while changing the logical symbols.
+\sourcecredit{Section 5.3, Exercises 5.3.6}
+\end{frame}
+
+\begin{frame}{5.3 Solution ideas}
+\begin{enumerate}
+\item The normalized form is
+\[
+\exists a,b\in\Z,\quad ab=1\land a\ne1\land b\ne1.
+\]
+It is true: choose $a=b=-1$. Their product is $1$, and neither equals $1$.
+\item The normalized form is
+\[
+\forall x\in\R,\ \exists y\in\R,\quad y>x.
+\]
+For an arbitrary $x$, choose $y=x+1$. Then $y>x$.
+\end{enumerate}
+A successful normalization turns the original wording into explicit inputs and witnesses.
+\sourcecredit{Section 5.3, Exercises 5.3.6}
+\end{frame}
+
+% Example 5.3.5; natural-square separation proof.
+\begin{frame}{One theorem, two useful proof presentations}
+\[
+\neg\exists n\in\N,\ n^2=2
+\quad\Longleftrightarrow\quad
+\forall n\in\N,\ n^2\ne2.
+\]
+\begin{block}{Proof of the normalized form}
+Fix $n\in\N$. Either $n\le1$ or $n\ge2$.
+\[
+n\le1\Rightarrow n^2\le1<2,
+\qquad
+n\ge2\Rightarrow n^2\ge4>2.
+\]
+Either strict inequality implies $n^2\ne2$.
+\end{block}
+The numerical argument is unchanged from Chapter 4, but normalization lets us begin with an arbitrary input rather than a hypothetical witness.
+\sourcecredit{Section 5.3, Example 5.3.5}
+\end{frame}
+
+\begin{frame}{Review: four questions before manipulating a statement}
+\begin{enumerate}
+\item What is the outermost connective or quantifier?
+\item Am I proving an implication, an equivalence, or the truth of a particular formula?
+\item Which variables may a witness depend on?
+\item Does this direction use excluded middle?
+\end{enumerate}
+\begin{block}{A reliable workflow}
+Write the domains $\longrightarrow$ expose hidden conjunctions $\longrightarrow$ normalize one layer at a time $\longrightarrow$ identify the resulting proof obligations.
+\end{block}
+A truth table checks propositional structure; a quantified claim also needs reasoning about its objects.
+\sourcecredit{Chapter 5, Sections 5.1--5.3}
+\end{frame}
+
+\begin{frame}{Sources and further work}
+Heather Macbeth, \emph{The Mechanics of Proof}, Chapter 5.
+\begin{itemize}
+\item 5.1: logical equivalence, truth tables, and quantifiers.
+\item 5.2: excluded middle, the superpowered predicate, and contraposition.
+\item 5.3: Table 5.1 and worked negation normalizations.
+\end{itemize}
+\medskip
+\href{https://hrmacbeth.github.io/math2001/05_Logic.html}{Read Chapter 5 and practice the remaining logical equivalences.}
+\medskip
+
+Teaching prose, tables, and added counterexamples are original. Source comments record example locations. Lean snippets use the textbook's educational tactics.
+\end{frame}
+\end{document}

@@ -1,0 +1,554 @@
+% Original CSC302 teaching exposition based on Macbeth, Chapter 3, Sections 3.1--3.5.
+% Source: https://hrmacbeth.github.io/math2001/03_Parity_and_Divisibility.html
+% Source snapshot: hrmacbeth/math2001 e660f42b13ddcb6d12b52ba036d6bd071a0cfb9b.
+% All prose is independently written. New numerical variants use the cited proof method.
+\input{preamble.tex}
+\coursechapter{3}{Parity and divisibility}
+\begin{document}
+
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}{What you will learn}
+\begin{itemize}
+\item Unfold evenness, oddness, divisibility, and congruence into witness statements.
+\item Construct new witnesses by algebraic calculation.
+\item Prove and use rules for modular arithmetic.
+\item Use residue cases to cover all integers.
+\item Explain how a B\'ezout identity justifies certain cancellation steps.
+\end{itemize}
+\begin{block}{The recurring proof pattern}
+Unpack the hypothesis $\longrightarrow$ calculate $\longrightarrow$ identify a witness for the conclusion.
+\end{block}
+\end{frame}
+
+\section{3.1 Definitions; parity}
+% Definitions and witness methods: Examples 3.1.1--3.1.7.
+\begin{frame}{3.1\quad Definitions tell us what must be proved}
+For an integer $n$:
+\begin{align*}
+n\text{ is even}&\quad\Longleftrightarrow\quad \exists k\in\Z,\ n=2k,\\
+n\text{ is odd}&\quad\Longleftrightarrow\quad \exists k\in\Z,\ n=2k+1.
+\end{align*}
+\begin{itemize}
+\item To prove evenness or oddness, produce an integer $k$.
+\item To use evenness or oddness, introduce the promised $k$ and its equality.
+\item Different existential statements may have different witnesses, even if both are written with the letter $k$.
+\end{itemize}
+Lean: \texttt{dsimp [Int.Odd]} displays the textbook's definition.
+\sourcecredit{Section 3.1}
+\end{frame}
+
+\begin{frame}{Worked examples: zero and negative integers count too}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Claim & Witness & Verification \\
+\midrule
+$0$ is even & $k=0$ & $0=2\cdot0$ \\
+$-8$ is even & $k=-4$ & $-8=2(-4)$ \\
+$9$ is odd & $k=4$ & $9=2\cdot4+1$ \\
+$-7$ is odd & $k=-4$ & $-7=2(-4)+1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{block}{Why the domain matters}
+The witnesses for $-8$ and $-7$ are integers, not natural numbers.
+Parity is not restricted to positive integers.
+\end{block}
+\sourcecredit{Section 3.1; methods of Examples 3.1.1--3.1.2}
+\end{frame}
+
+\begin{frame}[fragile]{Worked example: turn one oddness witness into another}
+If $n=2k+1$, then
+\[
+5n-2=5(2k+1)-2=2(5k+1)+1.
+\]
+Thus $5n-2$ is odd, with witness $5k+1$.
+\begin{lstlisting}
+example {n : Int} (h : Int.Odd n) : Int.Odd (5 * n - 2) := by
+  dsimp [Int.Odd] at *
+  cases h with
+  | intro k hk =>
+      use 5 * k + 1
+      calc
+        5 * n - 2 = 5 * (2 * k + 1) - 2 := by rw [hk]
+        _ = 2 * (5 * k + 1) + 1 := by ring
+\end{lstlisting}
+\sourcecredit{Section 3.1; method of Example 3.1.3}
+\end{frame}
+
+% Parity case split: method of Example 3.1.9, with the constant 4 removed.
+\begin{frame}{Worked example: every integer has one of two parities}
+Every integer is even or odd. Use this fact to prove $n^2+n$ is even.
+\begin{block}{Case 1: $n=2k$}
+\[
+n^2+n=(2k)^2+2k=2(2k^2+k).
+\]
+\end{block}
+\begin{block}{Case 2: $n=2k+1$}
+\[
+n^2+n=(2k+1)^2+(2k+1)=2(2k^2+3k+1).
+\]
+\end{block}
+Both witnesses are integers, and the cases exhaust all integers.
+Lean supplies the case split as \texttt{Int.even\_or\_odd n}.
+\sourcecredit{Example 3.1.9; parity dichotomy revisited in Chapter 4}
+\end{frame}
+
+\begin{frame}{Practice 3.1: name the output witness}
+\begin{enumerate}
+\item If $n$ is even, prove that $n^2+3$ is odd.
+\item If $m,n$ are odd integers, prove that $mn$ is odd.
+\end{enumerate}
+\vspace{1em}
+Use different letters for witnesses from independent hypotheses.
+End each proof by explicitly identifying an integer $k$ in the form $2k+1$.
+\end{frame}
+
+\begin{frame}{Practice 3.1: solution discussion}
+\textbf{1.} Write $n=2r$ for some $r\in\Z$. Then
+\[
+n^2+3=4r^2+3=2(2r^2+1)+1.
+\]
+The output witness is $2r^2+1$.
+\medskip
+
+\textbf{2.} Write $m=2a+1$ and $n=2b+1$, with $a,b\in\Z$. Then
+\[
+mn=(2a+1)(2b+1)=2(2ab+a+b)+1.
+\]
+The output witness is $2ab+a+b$.
+\sourcecredit{Problem 2 is a standard parity fact also practiced in Section 3.1}
+\end{frame}
+
+\section{3.2 Divisibility}
+\begin{frame}{3.2\quad Divisibility is an existence statement}
+For $a,b\in\Z$, define
+\[
+a\mid b\quad\Longleftrightarrow\quad\exists k\in\Z,\ b=ak.
+\]
+We say that $a$ divides $b$, that $a$ is a factor of $b$, or that $b$ is a multiple of $a$.
+\begin{itemize}
+\item $6\mid42$, because $42=6\cdot7$.
+\item $-3\mid12$, because $12=(-3)(-4)$.
+\item $a\mid0$ for every $a$, because $0=a\cdot0$.
+\item $0\mid b$ forces $b=0$.
+\end{itemize}
+For divisibility in $\N$, the witness must lie in $\N$.
+\sourcecredit{Examples 3.2.1--3.2.2 and Section 3.2 exercises}
+\end{frame}
+
+% Witness transport: Example 3.2.3.
+\begin{frame}[fragile]{Worked example: retain a common factor}
+If $a\mid b$, write $b=ak$. Then
+\[
+b^2+2b=(ak)^2+2ak=a\bigl(k(ak+2)\bigr).
+\]
+This proves $a\mid b^2+2b$.
+\begin{lstlisting}
+example {a b : Int} (h : Dvd.dvd a b) :
+    Dvd.dvd a (b ^ 2 + 2 * b) := by
+  cases h with
+  | intro k hk =>
+      use k * (a * k + 2)
+      calc
+        b ^ 2 + 2 * b = (a * k) ^ 2 + 2 * (a * k) := by rw [hk]
+        _ = a * (k * (a * k + 2)) := by ring
+\end{lstlisting}
+\sourcecredit{Example 3.2.3; ASCII form of the divisibility notation}
+\end{frame}
+
+\begin{frame}{Two basic facts and the hypotheses they need}
+\textbf{Transitivity.} For integers, $a\mid b$ and $b\mid c$ imply $a\mid c$.
+Indeed, if $b=ar$ and $c=bs$, then
+\[
+c=(ar)s=a(rs).
+\]
+\begin{block}{A size bound in $\N$}
+If $a,b\in\N$, $b>0$, and $a\mid b$, then $0<a\le b$.
+\end{block}
+Write $b=ak$. Since $ak>0$, both $a$ and $k$ are positive.
+Thus $k\ge1$, and $a=a\cdot1\le ak=b$.
+\medskip
+
+The condition $b>0$ is essential: $8\mid0$, but $8\nleq0$.
+\sourcecredit{Section 3.2; witness composition and Examples 3.2.7--3.2.8}
+\end{frame}
+
+\begin{frame}{Worked example: prove non-divisibility by a gap}
+\begin{block}{Consecutive multiples test}
+Let $d>0$ and $q,t\in\Z$. If $dq<t<d(q+1)$, then $d\nmid t$.
+\end{block}
+Why? If $t=dk$ for an integer $k$, dividing by positive $d$ gives
+$q<k<q+1$, impossible for an integer.
+\medskip
+
+\textbf{Example.} To show $4\nmid-6$, observe
+\[
+4(-2)=-8<-6<-4=4(-2+1).
+\]
+The same test works for negative $t$; choose the two surrounding multiples.
+\sourcecredit{Section 3.2; method of Example 3.2.6}
+\end{frame}
+
+\begin{frame}{Practice 3.2: compose the witnesses}
+\begin{enumerate}
+\item For $a,b\in\Z$, prove that $a\mid b$ implies $a\mid3b-b^2$.
+\item For $m,n,p\in\Z$, prove that $m\mid n$ and $n^3\mid p$ imply $m^3\mid p$.
+\item Show that $5\nmid17$ by placing $17$ between consecutive multiples.
+\end{enumerate}
+Do not divide by $a$ or $m$: those numbers may be zero.
+Use the equalities supplied by divisibility instead.
+\end{frame}
+
+\begin{frame}{Practice 3.2: solution discussion}
+\textbf{1.} If $b=ak$, then
+\[
+3b-b^2=3ak-a^2k^2=a(3k-ak^2).
+\]
+\textbf{2.} Write $n=mr$ and $p=n^3s$. Then
+\[
+p=(mr)^3s=m^3(r^3s).
+\]
+\textbf{3.} Since $5\cdot3=15<17<20=5(3+1)$, the number $17$ is not a multiple of $5$.
+\end{frame}
+
+\section{3.3 Modular arithmetic: theory}
+\begin{frame}{3.3\quad Congruence compares a difference to the modulus}
+For integers $a,b,m$, define
+\[
+a\equiv b\pmod m\quad\Longleftrightarrow\quad m\mid(a-b).
+\]
+Equivalently, $a-b=mk$ for some $k\in\Z$.
+\begin{exampleblock}{Worked example}
+$-8\equiv2\pmod5$, because $-8-2=5(-2)$.
+\end{exampleblock}
+\begin{itemize}
+\item Congruent numbers need not be equal.
+\item For $m>0$, congruence means having the same remainder modulo $m$.
+\item The definition also makes sense for $m=0$: it reduces to $a=b$.
+\end{itemize}
+Lean's textbook notation is represented by \texttt{Int.ModEq m a b}.
+\sourcecredit{Section 3.3 definition and Examples 3.3.1--3.3.2}
+\end{frame}
+
+% Theorem and proof methods: Examples 3.3.3--3.3.5.
+\begin{frame}{Addition and subtraction preserve congruence}
+Assume $a\equiv b\pmod m$ and $c\equiv d\pmod m$.
+Choose integers $r,s$ with $a-b=mr$ and $c-d=ms$.
+Then
+\[
+\begin{aligned}
+(a+c)-(b+d)&=(a-b)+(c-d)\\
+           &=mr+ms=m(r+s),\\[.4em]
+(a-c)-(b-d)&=(a-b)-(c-d)\\
+           &=mr-ms=m(r-s).
+\end{aligned}
+\]
+Therefore $a+c\equiv b+d\pmod m$ and $a-c\equiv b-d\pmod m$.
+Negation is similar: $(-a)-(-b)=-(a-b)=m(-r)$.
+\sourcecredit{Examples 3.3.3--3.3.5}
+\end{frame}
+
+% Theorem and proof method: Example 3.3.6.
+\begin{frame}{Multiplication preserves congruence}
+Again assume $a-b=mr$ and $c-d=ms$. The useful identity is
+\[
+ac-bd=(a-b)c+b(c-d).
+\]
+It gives
+\[
+\begin{aligned}
+ac-bd&=(mr)c+b(ms)\\
+     &=m(rc+bs).
+\end{aligned}
+\]
+Hence $ac\equiv bd\pmod m$, with witness $rc+bs$.
+\begin{block}{A useful special case}
+$a^2-b^2=(a-b)(a+b)=m\bigl(r(a+b)\bigr)$, so $a^2\equiv b^2\pmod m$.
+\end{block}
+\sourcecredit{Examples 3.3.6 and 3.3.8}
+\end{frame}
+
+\begin{frame}{Congruence supports chains and powers}
+For integers $a,b,c,m$:
+\begin{itemize}
+\item \textbf{Reflexivity:} $a-a=m\cdot0$, so $a\equiv a\pmod m$.
+\item \textbf{Symmetry:} if $a-b=mr$, then $b-a=m(-r)$.
+\item \textbf{Transitivity:} if $a-b=mr$ and $b-c=ms$, then $a-c=m(r+s)$.
+\end{itemize}
+\begin{block}{Power rule}
+If $a\equiv b\pmod m$ and $k\in\N$, then $a^k\equiv b^k\pmod m$.
+\end{block}
+For $k=0$ both sides are $1$. Repeated multiplication proves each positive-power case;
+Chapter 6 organizes this argument as induction on $k$.
+\sourcecredit{Examples 3.3.8--3.3.10, Section 3.3 exercises; Example 6.1.3}
+\end{frame}
+
+\begin{frame}{Ordinary division is not a congruence rule}
+Modulo $6$ we have
+\[
+2\cdot1\equiv2\cdot4\pmod6,
+\]
+because $2-8=-6$ is divisible by $6$.
+But cancelling the $2$ would assert
+\[
+1\equiv4\pmod6,
+\]
+which is false: $1-4=-3$ is not divisible by $6$.
+\begin{block}{What failed?}
+An equality can be divided by a nonzero real factor.
+A congruence needs additional arithmetic information about the factor and modulus.
+\end{block}
+Section 3.5 supplies identities that make certain cancellations valid.
+\sourcecredit{Section 3.3; new counterexample illustrating Example 3.3.7}
+\end{frame}
+
+\begin{frame}{Practice 3.3: prove the rule from the definition}
+Suppose $a\equiv b\pmod m$.
+\begin{enumerate}
+\item Prove $2a+1\equiv2b+1\pmod m$ by giving a witness.
+\item Prove $a^3\equiv b^3\pmod m$ using a factorization.
+\end{enumerate}
+\vspace{1em}
+Start from $a-b=mr$.
+Your calculation should end with $m$ times an integer.
+\end{frame}
+
+\begin{frame}{Practice 3.3: solution discussion}
+Choose $r\in\Z$ with $a-b=mr$.
+\textbf{1.}
+\[
+(2a+1)-(2b+1)=2(a-b)=2mr=m(2r).
+\]
+\textbf{2.}
+\[
+\begin{aligned}
+a^3-b^3&=(a-b)(a^2+ab+b^2)\\
+       &=m\bigl(r(a^2+ab+b^2)\bigr).
+\end{aligned}
+\]
+The witnesses are $2r$ and $r(a^2+ab+b^2)$, respectively.
+\sourcecredit{Problem 2 follows Example 3.3.9}
+\end{frame}
+
+\section{3.4 Modular arithmetic: calculations}
+\begin{frame}{3.4\quad Calculate with the rules you have proved}
+Let $a,b\in\Z$, with $a\equiv3\pmod7$ and $b\equiv4\pmod7$.
+Find the residue of $a^2+b$.
+\[
+\begin{aligned}
+a^2+b&\equiv3^2+4\pmod7&&\text{power and addition rules}\\
+     &=13&&\text{arithmetic}\\
+     &\equiv6\pmod7&&13-6=7\cdot1.
+\end{aligned}
+\]
+\begin{block}{Why this is a proof}
+Each congruence uses an established rule; an equality also gives a congruence.
+Transitivity connects the initial expression to its final residue.
+\end{block}
+\sourcecredit{Section 3.4; method of Example 3.4.2}
+\end{frame}
+
+% Source theorem and case method: Example 3.4.4.
+\begin{frame}{Worked example: cover every possible residue}
+\textbf{Claim.} Every integer $x$ satisfies $x^3\equiv x\pmod3$.
+
+There are three possible residues of $x$ modulo $3$:
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+Residue $r$ & $r^3$ & $r^3-r$ & Divisible by $3$? \\
+\midrule
+$0$ & $0$ & $0$ & $0=3\cdot0$ \\
+$1$ & $1$ & $0$ & $0=3\cdot0$ \\
+$2$ & $8$ & $6$ & $6=3\cdot2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+In each case $x^3\equiv r^3\equiv r\equiv x\pmod3$.
+The table is exhaustive because every integer has one of these residues.
+\sourcecredit{Example 3.4.4}
+\end{frame}
+
+\begin{frame}[fragile]{Lean: congruence transport and numerical verification}
+\begin{lstlisting}
+-- In the textbook's modular-arithmetic environment:
+example {a b : Int}
+    (ha : Int.ModEq 7 a 3) (hb : Int.ModEq 7 b 4) :
+    Int.ModEq 7 (a ^ 2 + b) (3 ^ 2 + 4) := by
+  rel [ha, hb]
+
+example : Int.ModEq 7 13 6 := by
+  use 1
+  numbers
+\end{lstlisting}
+The chapter file also imports \texttt{Library.Tactic.ModEq}.
+
+For residue cases, \texttt{mod\_cases hx : x \% 3} creates the three cases used on the preceding slide.
+\sourcecredit{Section 3.4 and its companion Lean file}
+\end{frame}
+
+\begin{frame}{Practice 3.4: substitution, witnesses, and cases}
+\begin{enumerate}
+\item If $n\equiv2\pmod5$, show $n^2+3n+1\equiv1\pmod5$.
+\item Find an integer $k$ such that $4k\equiv3\pmod7$.
+\item Show that every integer square is congruent to $0$ or $1$ modulo $4$.
+\end{enumerate}
+\vspace{1em}
+Use a different method in each problem: substitute, choose a witness, and split into residues.
+\end{frame}
+
+\begin{frame}{Practice 3.4: solution discussion}
+\textbf{1.} Substitute the known residue:
+\[
+n^2+3n+1\equiv2^2+3\cdot2+1=11\equiv1\pmod5.
+\]
+\textbf{2.} Take $k=6$, since $4\cdot6-3=21=7\cdot3$.
+\medskip
+
+\textbf{3.} For residues $r=0,1,2,3$ modulo $4$:
+\[
+r^2=0,1,4,9\quad\text{has residue}\quad0,1,0,1.
+\]
+The power rule transfers this calculation from $r$ back to any integer having residue $r$.
+\end{frame}
+
+\section{3.5 Bezout's identity}
+\begin{frame}{3.5\quad Expressing $1$ as an integer combination}
+The integers $3$ and $7$ satisfy
+\[
+(-2)\cdot3+1\cdot7=1.
+\]
+Multiplying by any integer $n$ gives
+\[
+n=-2(3n)+7n.
+\]
+\begin{block}{Why this helps}
+If $3n$ is a multiple of $7$, then both terms on the right are multiples of $7$.
+Their sum $n$ must therefore also be a multiple of $7$.
+\end{block}
+A relation expressing $1$ as an integer combination of two numbers is a B\'ezout identity for those numbers.
+\sourcecredit{Section 3.5; method of Example 3.5.1}
+\end{frame}
+
+\begin{frame}{Worked example: justify a cancellation by an explicit witness}
+Assume $n\in\Z$ and $7\mid3n$. Choose $t\in\Z$ with $3n=7t$.
+Then
+\[
+\begin{aligned}
+n&=-2(3n)+7n&&(-2)\cdot3+7=1\\
+ &=-2(7t)+7n&&\text{the divisibility witness}\\
+ &=7(n-2t)&&\text{algebra}.
+\end{aligned}
+\]
+Hence $7\mid n$, with witness $n-2t$.
+\begin{block}{Compare with the failed cancellation modulo $6$}
+Here the conclusion follows from a specific integer identity.
+Nonzero factors alone do not justify cancellation in congruences.
+\end{block}
+\sourcecredit{Section 3.5; numerical variant of Example 3.5.2}
+\end{frame}
+
+\begin{frame}{The general cancellation statement behind the example}
+\begin{block}{Theorem}
+Let $m,n,u,v,k\in\Z$, and suppose $um+vn=1$.
+If $m\mid nk$, then $m\mid k$.
+\end{block}
+\textbf{Proof.} Choose $t\in\Z$ with $nk=mt$. Then
+\[
+\begin{aligned}
+k&=(um+vn)k\\
+ &=m(uk)+v(nk)\\
+ &=m(uk)+v(mt)\\
+ &=m(uk+vt).
+\end{aligned}
+\]
+The conclusion has witness $uk+vt$.
+\sourcecredit{Generalization of the witness method in Section 3.5}
+\end{frame}
+
+\begin{frame}{Worked example: combine two divisibility assumptions}
+Suppose $5\mid z$ and $7\mid z$. Write $z=5a$ and $z=7b$.
+Since $3\cdot5-2\cdot7=1$,
+\[
+\begin{aligned}
+z&=15z-14z\\
+ &=15(7b)-14(5a)\\
+ &=35(3b-2a).
+\end{aligned}
+\]
+Thus $35\mid z$.
+\begin{block}{Check the arithmetic relationship first}
+From $4\mid12$ and $6\mid12$, we cannot conclude $24\mid12$.
+The product conclusion needs more than two divisibility assumptions.
+\end{block}
+\sourcecredit{Section 3.5; numerical variant of Example 3.5.3}
+\end{frame}
+
+\begin{frame}{Practice 3.5: find an identity equal to $1$}
+\begin{enumerate}
+\item Prove that $6\mid5n$ implies $6\mid n$, for every integer $n$.
+\item If $4\mid z$ and $9\mid z$, prove that $36\mid z$.
+\end{enumerate}
+\vspace{1em}
+Useful identities to investigate:
+\[
+6-5=1,\qquad9-2\cdot4=1.
+\]
+State the new divisibility witness explicitly.
+\end{frame}
+
+\begin{frame}{Practice 3.5: solution discussion}
+\textbf{1.} Choose $t\in\Z$ with $5n=6t$. Then
+\[
+n=6n-5n=6n-6t=6(n-t).
+\]
+The new witness is $n-t$.
+\medskip
+
+\textbf{2.} Write $z=4a$ and $z=9b$. Then
+\[
+z=9z-8z=9(4a)-8(9b)=36(a-2b).
+\]
+The new witness is $a-2b$.
+\end{frame}
+
+\begin{frame}{Chapter 3: definitions turn number theory into algebra}
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Statement & What you must exhibit \\
+\midrule
+$n$ is even & $n=2k$, with $k\in\Z$ \\
+$n$ is odd & $n=2k+1$, with $k\in\Z$ \\
+$a\mid b$ & $b=ak$, with $k\in\Z$ \\
+$a\equiv b\pmod m$ & $a-b=mk$, with $k\in\Z$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}
+\item Use existing witnesses to build the witness required by the conclusion.
+\item Congruence respects addition, subtraction, multiplication, and natural powers.
+\item Cancellation needs a justified arithmetic condition; a B\'ezout identity supplies one.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Reading and source references}
+Heather Macbeth, \emph{The Mechanics of Proof}, Chapter 3:
+\begin{itemize}
+\item 3.1 Definitions; parity
+\item 3.2 Divisibility
+\item 3.3 Modular arithmetic: theory
+\item 3.4 Modular arithmetic: calculations
+\item 3.5 B\'ezout's identity
+\end{itemize}
+\small
+\url{https://hrmacbeth.github.io/math2001/03_Parity_and_Divisibility.html}
+\par\medskip
+Companion code: \url{https://github.com/hrmacbeth/math2001}
+\par\medskip
+These slides independently present the definitions, proofs, and new numerical exercises.
+The power-rule induction is developed in Chapter 6.
+\end{frame}
+\end{document}

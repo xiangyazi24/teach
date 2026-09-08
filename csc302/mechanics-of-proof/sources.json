@@ -1,0 +1,259 @@
+{
+  "title": "The Mechanics of Proof",
+  "author": "Heather Macbeth",
+  "url": "https://hrmacbeth.github.io/math2001/",
+  "repository": "https://github.com/hrmacbeth/math2001",
+  "source_revision": "e660f42b13ddcb6d12b52ba036d6bd071a0cfb9b",
+  "copyright": "Copyright 2022-2024, Heather Macbeth. All rights reserved.",
+  "adaptation": "Original instructional prose and diagrams organized by the source book; no source figures or textbook prose reproduced wholesale.",
+  "chapters": [
+    {
+      "chapter": 1,
+      "title": "1. Proofs by calculation",
+      "url": "https://hrmacbeth.github.io/math2001/01_Proofs_by_Calculation.html",
+      "html_sha256": "5198ba1ae22a8f7bf9f718846da4dd002c7e87058e893402eb81e2fd8ccc415d",
+      "sections": [
+        {
+          "title": "1.1. Proving equalities",
+          "url": "https://hrmacbeth.github.io/math2001/01_Proofs_by_Calculation.html#proving-equalities"
+        },
+        {
+          "title": "1.2. Proving equalities in Lean",
+          "url": "https://hrmacbeth.github.io/math2001/01_Proofs_by_Calculation.html#proving-equalities-in-lean"
+        },
+        {
+          "title": "1.3. Tips and tricks",
+          "url": "https://hrmacbeth.github.io/math2001/01_Proofs_by_Calculation.html#tips-and-tricks"
+        },
+        {
+          "title": "1.4. Proving inequalities",
+          "url": "https://hrmacbeth.github.io/math2001/01_Proofs_by_Calculation.html#proving-inequalities"
+        },
+        {
+          "title": "1.5. A shortcut",
+          "url": "https://hrmacbeth.github.io/math2001/01_Proofs_by_Calculation.html#a-shortcut"
+        }
+      ]
+    },
+    {
+      "chapter": 2,
+      "title": "2. Proofs with structure",
+      "url": "https://hrmacbeth.github.io/math2001/02_Proofs_with_Structure.html",
+      "html_sha256": "4bd0515a88efcceb5a094bfb754c0ea839725ae12e4fb6e27bd8d996ff8102fb",
+      "sections": [
+        {
+          "title": "2.1. Intermediate steps",
+          "url": "https://hrmacbeth.github.io/math2001/02_Proofs_with_Structure.html#intermediate-steps"
+        },
+        {
+          "title": "2.2. Invoking lemmas",
+          "url": "https://hrmacbeth.github.io/math2001/02_Proofs_with_Structure.html#invoking-lemmas"
+        },
+        {
+          "title": "2.3. “Or” and proof by cases",
+          "url": "https://hrmacbeth.github.io/math2001/02_Proofs_with_Structure.html#or-and-proof-by-cases"
+        },
+        {
+          "title": "2.4. “And”",
+          "url": "https://hrmacbeth.github.io/math2001/02_Proofs_with_Structure.html#and"
+        },
+        {
+          "title": "2.5. Existence proofs",
+          "url": "https://hrmacbeth.github.io/math2001/02_Proofs_with_Structure.html#existence-proofs"
+        }
+      ]
+    },
+    {
+      "chapter": 3,
+      "title": "3. Parity and divisibility",
+      "url": "https://hrmacbeth.github.io/math2001/03_Parity_and_Divisibility.html",
+      "html_sha256": "12736bcc531154cab0f637c6e078c25875c128d8cb87168759a654d27ba63839",
+      "sections": [
+        {
+          "title": "3.1. Definitions; parity",
+          "url": "https://hrmacbeth.github.io/math2001/03_Parity_and_Divisibility.html#definitions-parity"
+        },
+        {
+          "title": "3.2. Divisibility",
+          "url": "https://hrmacbeth.github.io/math2001/03_Parity_and_Divisibility.html#divisibility"
+        },
+        {
+          "title": "3.3. Modular arithmetic: theory",
+          "url": "https://hrmacbeth.github.io/math2001/03_Parity_and_Divisibility.html#modular-arithmetic-theory"
+        },
+        {
+          "title": "3.4. Modular arithmetic: calculations",
+          "url": "https://hrmacbeth.github.io/math2001/03_Parity_and_Divisibility.html#modular-arithmetic-calculations"
+        },
+        {
+          "title": "3.5. Bézout’s identity",
+          "url": "https://hrmacbeth.github.io/math2001/03_Parity_and_Divisibility.html#bezout-s-identity"
+        }
+      ]
+    },
+    {
+      "chapter": 4,
+      "title": "4. Proofs with structure, II",
+      "url": "https://hrmacbeth.github.io/math2001/04_Proofs_with_Structure_II.html",
+      "html_sha256": "70c54130ba8e293f094ee2c28fca12f1f0838314c1e6db8f0894ee7a30e9f2ac",
+      "sections": [
+        {
+          "title": "4.1. “For all” and implication",
+          "url": "https://hrmacbeth.github.io/math2001/04_Proofs_with_Structure_II.html#for-all-and-implication"
+        },
+        {
+          "title": "4.2. “If and only if”",
+          "url": "https://hrmacbeth.github.io/math2001/04_Proofs_with_Structure_II.html#if-and-only-if"
+        },
+        {
+          "title": "4.3. “There exists a unique”",
+          "url": "https://hrmacbeth.github.io/math2001/04_Proofs_with_Structure_II.html#there-exists-a-unique"
+        },
+        {
+          "title": "4.4. Contradictory hypotheses",
+          "url": "https://hrmacbeth.github.io/math2001/04_Proofs_with_Structure_II.html#contradictory-hypotheses"
+        },
+        {
+          "title": "4.5. Proof by contradiction",
+          "url": "https://hrmacbeth.github.io/math2001/04_Proofs_with_Structure_II.html#proof-by-contradiction"
+        }
+      ]
+    },
+    {
+      "chapter": 5,
+      "title": "5. Logic",
+      "url": "https://hrmacbeth.github.io/math2001/05_Logic.html",
+      "html_sha256": "cae2ae84b85f39b14ef48dc3340e8ac14610c8c9513f890780852bac07670fc4",
+      "sections": [
+        {
+          "title": "5.1. Logical equivalence",
+          "url": "https://hrmacbeth.github.io/math2001/05_Logic.html#logical-equivalence"
+        },
+        {
+          "title": "5.2. The law of the excluded middle",
+          "url": "https://hrmacbeth.github.io/math2001/05_Logic.html#the-law-of-the-excluded-middle"
+        },
+        {
+          "title": "5.3. Normal form for negations",
+          "url": "https://hrmacbeth.github.io/math2001/05_Logic.html#normal-form-for-negations"
+        }
+      ]
+    },
+    {
+      "chapter": 6,
+      "title": "6. Induction",
+      "url": "https://hrmacbeth.github.io/math2001/06_Induction.html",
+      "html_sha256": "6a3f3add94cd9603057906e3d8192e58b87623f898522d4165b2e2c7129785ff",
+      "sections": [
+        {
+          "title": "6.1. Introduction",
+          "url": "https://hrmacbeth.github.io/math2001/06_Induction.html#introduction"
+        },
+        {
+          "title": "6.2. Recurrence relations",
+          "url": "https://hrmacbeth.github.io/math2001/06_Induction.html#recurrence-relations"
+        },
+        {
+          "title": "6.3. Two-step induction",
+          "url": "https://hrmacbeth.github.io/math2001/06_Induction.html#two-step-induction"
+        },
+        {
+          "title": "6.4. Strong induction",
+          "url": "https://hrmacbeth.github.io/math2001/06_Induction.html#strong-induction"
+        },
+        {
+          "title": "6.5. Pascal’s triangle",
+          "url": "https://hrmacbeth.github.io/math2001/06_Induction.html#pascal-s-triangle"
+        },
+        {
+          "title": "6.6. The Division Algorithm",
+          "url": "https://hrmacbeth.github.io/math2001/06_Induction.html#the-division-algorithm"
+        },
+        {
+          "title": "6.7. The Euclidean algorithm",
+          "url": "https://hrmacbeth.github.io/math2001/06_Induction.html#the-euclidean-algorithm"
+        }
+      ]
+    },
+    {
+      "chapter": 7,
+      "title": "7. Number theory",
+      "url": "https://hrmacbeth.github.io/math2001/07_Number_Theory.html",
+      "html_sha256": "4d13419f4114500a52482e3d06fa41e714c369adf71a08d486ca3351edb1e053",
+      "sections": [
+        {
+          "title": "7.1. Infinitely many primes",
+          "url": "https://hrmacbeth.github.io/math2001/07_Number_Theory.html#infinitely-many-primes"
+        },
+        {
+          "title": "7.2. Gauss’ and Euclid’s lemmas",
+          "url": "https://hrmacbeth.github.io/math2001/07_Number_Theory.html#gauss-and-euclid-s-lemmas"
+        },
+        {
+          "title": "7.3. The square root of two",
+          "url": "https://hrmacbeth.github.io/math2001/07_Number_Theory.html#the-square-root-of-two"
+        }
+      ]
+    },
+    {
+      "chapter": 8,
+      "title": "8. Functions",
+      "url": "https://hrmacbeth.github.io/math2001/08_Functions.html",
+      "html_sha256": "74f931cb71dd8ac1449429058a0388e06a017d2d1fcf37b5cf161c0919b1b3a4",
+      "sections": [
+        {
+          "title": "8.1. Injectivity and surjectivity",
+          "url": "https://hrmacbeth.github.io/math2001/08_Functions.html#injectivity-and-surjectivity"
+        },
+        {
+          "title": "8.2. Bijectivity",
+          "url": "https://hrmacbeth.github.io/math2001/08_Functions.html#bijectivity"
+        },
+        {
+          "title": "8.3. Composition of functions",
+          "url": "https://hrmacbeth.github.io/math2001/08_Functions.html#composition-of-functions"
+        },
+        {
+          "title": "8.4. Product types",
+          "url": "https://hrmacbeth.github.io/math2001/08_Functions.html#product-types"
+        }
+      ]
+    },
+    {
+      "chapter": 9,
+      "title": "9. Sets",
+      "url": "https://hrmacbeth.github.io/math2001/09_Sets.html",
+      "html_sha256": "cf4b42b26cf526f3635033b02355e085f3f1132dac30ee4198d64314e86c53b3",
+      "sections": [
+        {
+          "title": "9.1. Introduction",
+          "url": "https://hrmacbeth.github.io/math2001/09_Sets.html#introduction"
+        },
+        {
+          "title": "9.2. Set operations",
+          "url": "https://hrmacbeth.github.io/math2001/09_Sets.html#set-operations"
+        },
+        {
+          "title": "9.3. The type of sets",
+          "url": "https://hrmacbeth.github.io/math2001/09_Sets.html#the-type-of-sets"
+        }
+      ]
+    },
+    {
+      "chapter": 10,
+      "title": "10. Relations",
+      "url": "https://hrmacbeth.github.io/math2001/10_Relations.html",
+      "html_sha256": "0fab69334c96b10881074f82a7af89f0fe135d0fc8471e7e534ff6de939ccebf",
+      "sections": [
+        {
+          "title": "10.1. Reflexive, symmetric, antisymmetric, transitive",
+          "url": "https://hrmacbeth.github.io/math2001/10_Relations.html#reflexive-symmetric-antisymmetric-transitive"
+        },
+        {
+          "title": "10.2. Equivalence relations",
+          "url": "https://hrmacbeth.github.io/math2001/10_Relations.html#equivalence-relations"
+        }
+      ]
+    }
+  ]
+}

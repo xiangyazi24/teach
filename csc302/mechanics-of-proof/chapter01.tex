@@ -1,0 +1,491 @@
+% Original CSC302 teaching exposition based on Macbeth, Chapter 1, Sections 1.1--1.5.
+% Source: https://hrmacbeth.github.io/math2001/01_Proofs_by_Calculation.html
+% Source snapshot: hrmacbeth/math2001 e660f42b13ddcb6d12b52ba036d6bd071a0cfb9b.
+% Numerical variants and exercises below are newly chosen; example locators identify
+% the corresponding method, not a claim that the new numbers appear in the book.
+\input{preamble.tex}
+\coursechapter{1}{Proofs by calculation}
+\begin{document}
+
+\begin{frame}\titlepage\end{frame}
+
+\begin{frame}{What you will learn}
+\begin{itemize}
+\item Turn hypotheses into a chain that begins and ends at the required expressions.
+\item Separate algebraic identities from substitutions of known facts.
+\item Control the direction of inequalities and justify sign conditions.
+\item Translate individual steps into \texttt{calc}, \texttt{ring}, \texttt{rw},
+      \texttt{rel}, \texttt{numbers}, \texttt{extra}, and \texttt{addarith}.
+\end{itemize}
+\begin{block}{A proof is an explanation}
+Every link must be justified, and the links must combine to establish the stated goal.
+\end{block}
+\end{frame}
+
+\begin{frame}{Start by identifying the number system}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Domain & Examples & Lean name \\
+\midrule
+$\N$ & $0,1,2,\ldots$ & \texttt{Nat} \\
+$\Z$ & $\ldots,-2,-1,0,1,\ldots$ & \texttt{Int} \\
+$\Q$ & $-\frac32,\frac57,4$ & \texttt{Rat} \\
+$\R$ & $\frac57,\sqrt2,\pi$ & \texttt{Real} \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}
+\item Here $0$ is a natural number.
+\item The domain constrains the legal operations: $3-5$ in $\N$ is truncated subtraction.
+\item In calculations over $\Q$ or $\R$, division by a known nonzero constant is available.
+\end{itemize}
+\sourcecredit{Chapter 1 introduction and Section 1.3}
+\end{frame}
+
+\section{1.1 Proving equalities}
+% Method: Examples 1.1.1--1.1.2.
+\begin{frame}{1.1\quad A chain proves its endpoints equal}
+Suppose each of the following statements has been justified:
+\[
+E_0=E_1,\qquad E_1=E_2,\qquad E_2=E_3.
+\]
+Transitivity of equality gives $E_0=E_3$.
+\begin{block}{A useful writing discipline}
+Start with the left side of the goal. End with its right side.
+Keep an equality sign between consecutive expressions.
+\end{block}
+Two common justifications:
+\begin{itemize}
+\item \textbf{Algebra:} the expressions agree for all values in the domain.
+\item \textbf{Substitution:} a hypothesis says that one expression equals another.
+\end{itemize}
+\sourcecredit{Section 1.1}
+\end{frame}
+
+\begin{frame}{Worked example: reveal the expressions you know}
+Let $a,b\in\Q$, with $a-b=3$ and $ab=4$. Prove $(a+b)^2=25$.
+\[
+\begin{aligned}
+(a+b)^2
+ &= (a-b)^2+4ab &&\text{algebra}\\
+ &= 3^2+4\cdot4 &&\text{the two hypotheses}\\
+ &=25 &&\text{arithmetic}.
+\end{aligned}
+\]
+\begin{block}{Why does the first step hold?}
+$(a-b)^2+4ab=a^2-2ab+b^2+4ab=a^2+2ab+b^2$.
+\end{block}
+The initial rewrite was chosen because $a-b$ and $ab$ have known values.
+\sourcecredit{Section 1.1; numerical variant of Example 1.1.1}
+\end{frame}
+
+% Method and identity: Example 1.1.4. Explanation independently composed.
+\begin{frame}{A calculation can avoid an unnecessary division}
+Let $a,b,c,d,e,f\in\Z$, with $ad=bc$ and $cf=de$.
+Then
+\[
+\begin{aligned}
+d(af-be)&=(ad)f-dbe\\
+        &=(bc)f-dbe\\
+        &=b(cf)-dbe\\
+        &=b(de)-dbe=0.
+\end{aligned}
+\]
+Every step uses multiplication, subtraction, or a given equality.
+\begin{block}{Check the hypotheses before cancelling}
+Writing $a=bc/d$ would require $d\ne0$ and a suitable domain.
+The hypotheses do not give $d\ne0$.
+\end{block}
+\sourcecredit{Example 1.1.4}
+\end{frame}
+
+\begin{frame}{Practice 1.1: write the chain before simplifying}
+\begin{enumerate}
+\item Let $r,s\in\R$, with $r+3s=2$ and $s=-1$. Prove $r=5$.
+\item Let $a,b\in\Q$, with $a-b=5$ and $ab=6$. Prove $(a+b)^2=49$.
+\end{enumerate}
+\vspace{1em}
+For each proof:
+\begin{itemize}
+\item State the first and last expressions before filling the middle.
+\item Mark every step as algebra, substitution, or arithmetic.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Practice 1.1: solution discussion}
+\textbf{1.} Introduce the expression $r+3s$:
+\[
+\begin{aligned}
+r&=(r+3s)-3s&&\text{algebra}\\
+ &=2-3(-1)&&\text{substitution}\\
+ &=5&&\text{arithmetic}.
+\end{aligned}
+\]
+\textbf{2.} Use the same identity as in the worked example:
+\[
+(a+b)^2=(a-b)^2+4ab=5^2+4\cdot6=49.
+\]
+The calculation proves the requested expression directly; values of $a$ and $b$ are unnecessary.
+\end{frame}
+
+\section{1.2 Proving equalities in Lean}
+% Syntax and method: Examples 1.2.1--1.2.2.
+\begin{frame}[fragile]{1.2\quad Read a Lean statement as a mathematical sentence}
+\begin{lstlisting}
+example {a b : Rat}
+    (hd : a - b = 3) (hp : a * b = 4) :
+    (a + b) ^ 2 = 25 := by
+\end{lstlisting}
+\begin{itemize}
+\item \texttt{a b : Rat}: the variables are rational numbers.
+\item \texttt{hd} and \texttt{hp}: names for the hypotheses.
+\item After the final colon: the proposition to prove.
+\item \texttt{by}: the proof will be given by tactics.
+\item Multiplication uses \texttt{*}; exponentiation uses \texttt{\^{}}.
+\end{itemize}
+The examples use the textbook environment: its chapter file imports
+\texttt{Library.Basic} and runs \texttt{math2001\_init}.
+\sourcecredit{Section 1.2 and accompanying Lean file}
+\end{frame}
+
+\begin{frame}[fragile]{The calculation, with one justification per line}
+\begin{lstlisting}
+example {a b : Rat}
+    (hd : a - b = 3) (hp : a * b = 4) :
+    (a + b) ^ 2 = 25 := by
+  calc
+    (a + b) ^ 2 = (a - b) ^ 2 + 4 * (a * b) := by ring
+    _ = 3 ^ 2 + 4 * 4 := by rw [hd, hp]
+    _ = 25 := by numbers
+\end{lstlisting}
+\begin{itemize}
+\item \texttt{\_} repeats the preceding right side.
+\item \texttt{ring} proves a polynomial identity.
+\item \texttt{rw [hd, hp]} substitutes the named equalities.
+\item \texttt{numbers} checks the final numerical equality.
+\end{itemize}
+\sourcecredit{Method of Example 1.2.1}
+\end{frame}
+
+\begin{frame}{Treat Lean feedback as a local question}
+At a line of a \texttt{calc} proof, ask:
+\begin{enumerate}
+\item What equality must this line establish?
+\item Does it hold by algebra alone, or does it use a hypothesis?
+\item If it uses a hypothesis, does its left side occur in the expression?
+\end{enumerate}
+\begin{block}{Parentheses matter to rewriting}
+$(ab)c$ and $a(bc)$ are equal, but have different syntactic structure.
+Use an algebraic step to expose the exact subexpression you plan to rewrite.
+\end{block}
+An unfinished placeholder is still an unfinished proof. Check that all proof obligations are resolved.
+\sourcecredit{Examples 1.2.2--1.2.4}
+\end{frame}
+
+\begin{frame}{Practice 1.2: select the justification}
+Let $r,s\in\R$, with named hypotheses
+\[
+\texttt{h1}:r+3s=2,\qquad \texttt{h2}:s=-1.
+\]
+Fill the right column with \texttt{ring}, \texttt{rw [...]}, or \texttt{numbers}.
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Step & Justification \\
+\midrule
+$r=(r+3s)-3s$ & \rule{35mm}{0.3pt} \\
+$(r+3s)-3s=2-3s$ & \rule{35mm}{0.3pt} \\
+$2-3s=2-3(-1)$ & \rule{35mm}{0.3pt} \\
+$2-3(-1)=5$ & \rule{35mm}{0.3pt} \\
+\bottomrule
+\end{tabular}
+\end{center}
+Which step would fail if you tried \texttt{ring} without using any hypothesis?
+\end{frame}
+
+\begin{frame}[fragile]{Practice 1.2: a complete Lean solution}
+\begin{lstlisting}
+example {r s : Real}
+    (h1 : r + 3 * s = 2) (h2 : s = -1) : r = 5 := by
+  calc
+    r = (r + 3 * s) - 3 * s := by ring
+    _ = 2 - 3 * s := by rw [h1]
+    _ = 2 - 3 * (-1) := by rw [h2]
+    _ = 5 := by numbers
+\end{lstlisting}
+\texttt{ring} cannot establish the substitution steps for arbitrary $r,s$.
+The hypotheses supply their mathematical content.
+\end{frame}
+
+\section{1.3 Tips and tricks}
+% Methods: Examples 1.3.2, 1.3.6--1.3.9.
+\begin{frame}{1.3\quad How to find the intermediate expressions}
+\begin{enumerate}
+\item Write the target endpoints.
+\item List useful expressions appearing in the hypotheses.
+\item Rewrite the target to contain those expressions.
+\item Substitute only after the matching expressions are visible.
+\end{enumerate}
+\begin{exampleblock}{A small example}
+If $x+6=2$ in $\Z$, then
+\[
+x=(x+6)-6=2-6=-4.
+\]
+Adding and subtracting $6$ creates the expression we know.
+\end{exampleblock}
+\sourcecredit{Section 1.3; method of Example 1.3.2}
+\end{frame}
+
+\begin{frame}{Worked example: combine two equations}
+Let $x,y\in\Q$, with $x+2y=9$ and $3x-y=13$. Prove $x=5$.
+\begin{block}{Planning}
+The coefficients of $y$ are $2$ and $-1$.
+Adding the first expression to twice the second cancels $y$.
+\end{block}
+\[
+\begin{aligned}
+x&=\frac{(x+2y)+2(3x-y)}7&&\text{algebra}\\
+ &=\frac{9+2\cdot13}7&&\text{substitution}\\
+ &=5&&\text{arithmetic}.
+\end{aligned}
+\]
+The denominator $7$ is nonzero in $\Q$.
+\sourcecredit{Section 1.3; methods of Examples 1.3.6--1.3.8}
+\end{frame}
+
+\begin{frame}{Worked example: organize a polynomial around a hypothesis}
+Let $w,z\in\R$ and suppose $w+2=z$. Prove
+\[
+w^2+5w+4=z^2+z-2.
+\]
+\[
+\begin{aligned}
+w^2+5w+4
+  &=(w+2)^2+(w+2)-2&&\text{algebra}\\
+  &=z^2+z-2&&\text{substitution}.
+\end{aligned}
+\]
+\textbf{Check the rewrite:}
+\[
+(w+2)^2+(w+2)-2=w^2+4w+4+w+2-2=w^2+5w+4.
+\]
+\sourcecredit{Section 1.3; method of Example 1.3.9}
+\end{frame}
+
+\begin{frame}{Practice 1.3: create the expressions you need}
+\begin{enumerate}
+\item If $x+y=7$ and $2x-y=2$ in $\Q$, prove $x=3$.
+\item If $a-2=b$ in $\R$, prove $a^2-a+1=b^2+3b+3$.
+\end{enumerate}
+\vspace{1em}
+For the first problem, find a linear combination that cancels $y$.
+
+For the second, rewrite the left side using $a-2$.
+\end{frame}
+
+\begin{frame}{Practice 1.3: solution discussion}
+\textbf{1.} The $y$ coefficients already cancel:
+\[
+x=\frac{(x+y)+(2x-y)}3=\frac{7+2}3=3.
+\]
+\textbf{2.} Complete a polynomial in $a-2$:
+\[
+\begin{aligned}
+a^2-a+1&=(a-2)^2+3(a-2)+3\\
+        &=b^2+3b+3.
+\end{aligned}
+\]
+Both proofs follow the same pattern: algebra first, substitution second.
+\end{frame}
+
+\section{1.4 Proving inequalities}
+\begin{frame}{1.4\quad An inequality needs a direction and a sign condition}
+For real numbers:
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Known fact & Additional condition & Valid conclusion \\
+\midrule
+$a\le b$ & none & $a+c\le b+c$ \\
+$a\le b$ & none & $-b\le-a$ \\
+$a\le b$ & $c\ge0$ & $ca\le cb$ \\
+$a<b$ & $c>0$ & $ca<cb$ \\
+$a\le b$ & $0\le a$ & $a^2\le b^2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{block}{Transitivity}
+$A\le B<C\le D$ implies $A<D$.
+A consistent chain with a strict step has a strict conclusion.
+\end{block}
+\sourcecredit{Section 1.4}
+\end{frame}
+
+% Numerical variant of Example 1.4.1.
+\begin{frame}{Worked example: subtraction reverses the comparison}
+Let $x,y\in\Z$, with $x+4\le2$ and $y+3x\ge1$. Prove $y>6$.
+\[
+\begin{aligned}
+y&=(y+3x)-3x&&\text{algebra}\\
+ &\ge1-3x&&y+3x\ge1\\
+ &=13-3(x+4)&&\text{algebra}\\
+ &\ge13-3\cdot2&&x+4\le2\\
+ &=7>6&&\text{arithmetic}.
+\end{aligned}
+\]
+When $x+4$ becomes larger, $13-3(x+4)$ becomes smaller.
+That is why the fourth line points toward $\ge$.
+\sourcecredit{Section 1.4; method of Example 1.4.1}
+\end{frame}
+
+% Numerical variant of Example 1.4.8.
+\begin{frame}{Worked example: add a nonnegative square}
+Let $x,y\in\R$ and suppose $x^2+y^2\le2$. Prove $(x+y)^2<5$.
+\[
+\begin{aligned}
+(x+y)^2&\le (x+y)^2+(x-y)^2&&(x-y)^2\ge0\\
+       &=2(x^2+y^2)&&\text{algebra}\\
+       &\le4&&\text{the hypothesis}\\
+       &<5&&\text{arithmetic}.
+\end{aligned}
+\]
+\begin{block}{How was the extra square chosen?}
+Its expansion cancels the $2xy$ term and produces the known expression $x^2+y^2$.
+\end{block}
+\sourcecredit{Section 1.4; method of Example 1.4.8}
+\end{frame}
+
+\begin{frame}{Valid individual comparisons can form an invalid proof}
+If $n\in\Z$ and $n\ge6$, all these statements are true:
+\[
+n^2\ge36>28\le3n+10.
+\]
+They do \textbf{not} combine to prove $n^2>3n+10$: the direction changes.
+For comparison, $4>3\le100$ does not imply $4>100$.
+\begin{block}{A correct chain}
+Since $n\ge6>0$,
+\[
+n^2=n\cdot n\ge6n=3n+3n\ge3n+18>3n+10.
+\]
+\end{block}
+Keep some dependence on $n$ so that the final expression remains comparable.
+\sourcecredit{Section 1.4; method of Example 1.4.6}
+\end{frame}
+
+\begin{frame}[fragile]{Lean follows the same inequality reasoning}
+\begin{lstlisting}
+example {x y : Real} (h : x ^ 2 + y ^ 2 <= 2) :
+    (x + y) ^ 2 < 5 := by
+  calc
+    (x + y) ^ 2 <= (x + y) ^ 2 + (x - y) ^ 2 := by extra
+    _ = 2 * (x ^ 2 + y ^ 2) := by ring
+    _ <= 2 * 2 := by rel [h]
+    _ < 5 := by numbers
+\end{lstlisting}
+\texttt{extra}: elementary order facts such as adding a square.\par
+\texttt{rel [h]}: transport a known comparison through compatible operations.\par
+\texttt{rw} is for equality substitution; a hypothesis with $\le$ needs order reasoning.
+\sourcecredit{Examples 1.4.7--1.4.8}
+\end{frame}
+
+\begin{frame}{Practice 1.4: retain useful terms}
+\begin{enumerate}
+\item Let $x\in\R$, with $x\ge4$. Prove $x^2-2x\ge8$.
+\item Let $a,b\in\R$. Prove $a^2+b^2\ge2ab$.
+\end{enumerate}
+\vspace{1em}
+For each inequality, identify the nonnegative factor or square that makes the key step valid.
+\end{frame}
+
+\begin{frame}{Practice 1.4: solution discussion}
+\textbf{1.} We know $x\ge4>0$, so multiplying by $x$ preserves $\ge$:
+\[
+x^2-2x\ge4x-2x=2x\ge8.
+\]
+\textbf{2.} Use the square of the difference:
+\[
+a^2+b^2=(a-b)^2+2ab\ge2ab.
+\]
+The second result has no sign assumptions on $a$ or $b$;
+the nonnegativity comes from $(a-b)^2$.
+\end{frame}
+
+\section{1.5 A shortcut}
+\begin{frame}[fragile]{1.5\quad Abbreviate additive rearrangements}
+The book permits a short justification when a deduction needs only
+addition or subtraction of terms on the two sides.
+\begin{lstlisting}
+example {x : Int} (h : x + 6 = 2) : x = -4 := by
+  addarith [h]
+
+example {u v : Real} (h : u <= 9 - v) : u + v < 10 := by
+  addarith [h]
+\end{lstlisting}
+On paper: ``From $u\le9-v$, we get $u+v\le9<10$.''
+\begin{block}{The course convention}
+For deductions requiring multiplication or division, keep the relevant calculation visible.
+\end{block}
+\sourcecredit{Section 1.5}
+\end{frame}
+
+\begin{frame}{Practice 1.5: which steps are merely additive?}
+Assume the variables are real numbers.
+\begin{enumerate}
+\item $a-2b=3\quad\Longrightarrow\quad a=2b+3$.
+\item $4w+1=9\quad\Longrightarrow\quad w=2$.
+\item $m\le7-n\quad\Longrightarrow\quad m+n<8$.
+\end{enumerate}
+\vspace{1em}
+Explain each deduction. For the one that requires division, write a full chain.
+\end{frame}
+
+\begin{frame}{Practice 1.5: solution discussion}
+\textbf{1.} Add $2b$ to both sides: an additive rearrangement.
+\[
+a=2b+3.
+\]
+\textbf{2.} Division by $4$ is essential:
+\[
+w=\frac{(4w+1)-1}{4}=\frac{9-1}{4}=2.
+\]
+\textbf{3.} Add $n$ to both sides and compare constants:
+\[
+m+n\le7<8.
+\]
+The presence of $2b$ in the first statement does not mean that the deduction multiplies both sides.
+\end{frame}
+
+\begin{frame}{Chapter 1: a checklist for calculation proofs}
+\begin{enumerate}
+\item Identify the domain, hypotheses, and target endpoints.
+\item Expose known expressions through algebraic identities.
+\item Give a reason for each equality or inequality.
+\item Check nonzero denominators and signs of multipliers.
+\item Check that the relations combine in one direction.
+\item Use Lean feedback to inspect individual steps.
+\end{enumerate}
+\begin{block}{Next chapter}
+A proof can branch, build intermediate facts, and introduce witnesses.
+Calculations will become components of larger arguments.
+\end{block}
+\end{frame}
+
+\begin{frame}{Reading and source references}
+Heather Macbeth, \emph{The Mechanics of Proof}, Chapter 1:
+\begin{itemize}
+\item 1.1 Proving equalities
+\item 1.2 Proving equalities in Lean
+\item 1.3 Tips and tricks
+\item 1.4 Proving inequalities
+\item 1.5 A shortcut
+\end{itemize}
+\small
+\url{https://hrmacbeth.github.io/math2001/01_Proofs_by_Calculation.html}
+\par\medskip
+Companion code: \url{https://github.com/hrmacbeth/math2001}
+\par\medskip
+These slides provide an independently written classroom presentation and new numerical practice.
+Use the book for additional examples and exercises.
+\end{frame}
+\end{document}

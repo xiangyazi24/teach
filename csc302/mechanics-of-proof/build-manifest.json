@@ -1,0 +1,117 @@
+{
+  "built_at_utc": "2026-09-08T01:16:09+00:00",
+  "engine": "Tectonic 0.17.0",
+  "shared_inputs": {
+    "preamble.tex": "5abde0222a78d5dc6c695e4d1a036ca2cd121d969c76efdbcf31d6be308f1411",
+    "sources.json": "a965e1ad6684913af1ba3e3e971df35e05aa29f18919b20f2e1c6643c96111fd",
+    "build.py": "edd1a394ed590bf90dd65fdd4d01767f9d4ae26ee6c537ec677b39939c61c8b0"
+  },
+  "chapters": [
+    {
+      "chapter": 1,
+      "source": "chapter01.tex",
+      "source_sha256": "4cf01005e83de36b544a1122f9b18cf3497a528a644aa57ec375a4dfac9099a6",
+      "pdf": "pdf/chapter01.pdf",
+      "pdf_sha256": "ccc48487cc809704daae5674cee463bfc4b6666604bad04ebaafe7a7c25119f5",
+      "pages": 30,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 2,
+      "source": "chapter02.tex",
+      "source_sha256": "37efe83a607854ca0daa66e844ca48241dc6bca58877434ed26bcd3f78358cc5",
+      "pdf": "pdf/chapter02.pdf",
+      "pdf_sha256": "118581ac9f390f31b13487320cdd3425796f1a2a4523bc3153fb4eea5f9b21f5",
+      "pages": 33,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 3,
+      "source": "chapter03.tex",
+      "source_sha256": "ed2f03c1199677278eb47cc4fb0500f0346e6353685bd2e7462ee7e6789d6f27",
+      "pdf": "pdf/chapter03.pdf",
+      "pdf_sha256": "deda43e5dd5da5964600ccd3f51c7d94dbc4f830312b80c65f0371104cad436b",
+      "pages": 34,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 4,
+      "source": "chapter04.tex",
+      "source_sha256": "458218c484965939647fbacd9f81b152959291aa039556e9eafbc5c7574d8ca0",
+      "pdf": "pdf/chapter04.pdf",
+      "pdf_sha256": "50c202f7e8969657c8c3c4d69b122c4dea4d0f2e436619557659839c1f594d1d",
+      "pages": 32,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 5,
+      "source": "chapter05.tex",
+      "source_sha256": "0688e8f7aab57d4e52ddd0b051c9b410e61ea6738bab15d37f94dd3bf8de0b96",
+      "pdf": "pdf/chapter05.pdf",
+      "pdf_sha256": "bc71822dc487e14ebe194a5c211179b28836190c8c990aa852ed05ca75a4359e",
+      "pages": 28,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 6,
+      "source": "chapter06.tex",
+      "source_sha256": "824c9569f6b333c7d270614c954c2db677396f6c3a206df09c53eb3eca4564ba",
+      "pdf": "pdf/chapter06.pdf",
+      "pdf_sha256": "9e1fe7741f84003f12d2003adce2dccd136eef9a21092162719d6a534a83af07",
+      "pages": 45,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 7,
+      "source": "chapter07.tex",
+      "source_sha256": "eecaad45eff76924bca840af6a5369245fa89cab99e039d8697749d6a3b8ab0c",
+      "pdf": "pdf/chapter07.pdf",
+      "pdf_sha256": "a0f64b239fd4d6aad3281255828c5a3e355bac189765f0aba84efc17d72e784f",
+      "pages": 29,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 8,
+      "source": "chapter08.tex",
+      "source_sha256": "afb703fcde09fd5aea993f872cbfe0941c59619c3ae785156b86ccaa5d1eafe6",
+      "pdf": "pdf/chapter08.pdf",
+      "pdf_sha256": "263a6d408978b02839ae378bb284d129995186245ccea988b2742e0106ba1f1f",
+      "pages": 28,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 9,
+      "source": "chapter09.tex",
+      "source_sha256": "b8a258afe9d72a53338f7a7f97c9ba94f493e88434511931ec947d69b668bcf8",
+      "pdf": "pdf/chapter09.pdf",
+      "pdf_sha256": "4a1d927beef34c6a3a7ccc43aae3d8ae8e073836701a23508b21250156cac38a",
+      "pages": 27,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    },
+    {
+      "chapter": 10,
+      "source": "chapter10.tex",
+      "source_sha256": "ab7d3699dc488599d679ddf94a2ab32926e839ab92b06b3f0445cacff7aa5bff",
+      "pdf": "pdf/chapter10.pdf",
+      "pdf_sha256": "96e1bb13a1b16cf73852ac33311e3fdb0c035dd3bdf9567e1c313ff4b5d0f7c6",
+      "pages": 26,
+      "overfull_boxes_over_half_point": 0,
+      "missing_glyphs": 0
+    }
+  ],
+  "combined": {
+    "pdf": "pdf/all-chapters.pdf",
+    "pdf_sha256": "9bff034d9e6695cb8d2a09e448236f6f1b23d6a635f78c3b28781e060c2a717b",
+    "pages": 312
+  },
+  "scope": "LaTeX compilation, glyph/overflow checks, PDF page geometry and source/output hashes. Not a Lean kernel check."
+}

@@ -1,0 +1,51 @@
+% CSC302 lecture slides adapted from Heather Macbeth, The Mechanics of Proof.
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array,listings,tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\definecolor{ProofNavy}{HTML}{18324F}
+\definecolor{ProofTeal}{HTML}{007D82}
+\definecolor{ProofPaper}{HTML}{F3F6F8}
+\usetheme{default}
+\setbeamercolor{normal text}{fg=ProofNavy,bg=white}
+\setbeamercolor{structure}{fg=ProofTeal}
+\setbeamercolor{frametitle}{fg=ProofNavy}
+\setbeamercolor{block title}{fg=white,bg=ProofNavy}
+\setbeamercolor{block body}{fg=ProofNavy,bg=ProofPaper}
+\setbeamercolor{block title example}{fg=white,bg=ProofTeal}
+\setbeamercolor{block body example}{fg=ProofNavy,bg=ProofPaper}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\small\textbullet}
+\setbeamertemplate{footline}{%
+  \leavevmode\hbox{%
+  \begin{beamercolorbox}[wd=.86\paperwidth,ht=2.8ex,dp=1.2ex,leftskip=1.6em]{author in head/foot}%
+    \scriptsize CSC302\quad\textbar\quad\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.14\paperwidth,ht=2.8ex,dp=1.2ex,rightskip=1.6em plus1fil]{date in head/foot}%
+    \scriptsize\insertframenumber/\inserttotalframenumber
+  \end{beamercolorbox}}}
+\setbeamersize{text margin left=8mm,text margin right=8mm}
+\lstdefinelanguage{Lean}{%
+  morekeywords={example,theorem,lemma,def,by,calc,have,exact,apply,intro,intros,constructor,rcases,rfl,rw,ring,numbers,linarith,nlinarith,rel,extra,addarith,obtain,left,right,use,choose,dsimp,change,ext,fun,show,from,at,with,induction,case,decide,contradiction,push_neg,by_cases,by_contra,assumption,existsi,simp,simpa},
+  sensitive=true,morecomment=[l]{--},morestring=[b]"}
+\lstset{language=Lean,basicstyle=\ttfamily\small,keywordstyle=\color{ProofTeal}\bfseries,
+  commentstyle=\color{gray},stringstyle=\color{ProofNavy},showstringspaces=false,
+  columns=fullflexible,keepspaces=true,breaklines=true,frame=single,
+  rulecolor=\color{ProofTeal!30},backgroundcolor=\color{ProofPaper},
+  aboveskip=0.5em,belowskip=0.4em}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\coursechapter}[2]{%
+  \title[Chapter #1: #2]{Chapter #1\\#2}%
+  \subtitle{The Mechanics of Proof \textbar{} CSC302 lecture notes}%
+  \author{Based on Heather Macbeth's textbook}%
+  \date{}%
+}
+\newcommand{\sourcecredit}[1]{\par\vfill{\tiny Source: Heather Macbeth, \emph{The Mechanics of Proof}, #1.}}
+\newcommand{\bookurl}{\url{https://hrmacbeth.github.io/math2001/}}
+\hypersetup{colorlinks=true,urlcolor=ProofTeal,linkcolor=ProofNavy}
