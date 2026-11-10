@@ -1,0 +1,9 @@
+name = "csc302-final"
+version = "0.1.0"
+defaultTargets = ["FinalProject"]
+
+[[lean_lib]]
+name = "FinalProject"
+
+[[lean_lib]]
+name = "Projects"

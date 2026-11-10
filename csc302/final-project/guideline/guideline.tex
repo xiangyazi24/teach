@@ -1,0 +1,535 @@
+% CSC302 final project guideline. Build: pdflatex guideline.tex (twice).
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,tabularx,longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+\usepackage{newunicodechar}
+\newunicodechar{ℕ}{\ensuremath{\mathbb{N}}}
+\newunicodechar{∣}{\ensuremath{\mid}}
+\newunicodechar{≡}{\ensuremath{\equiv}}
+\newunicodechar{≤}{\ensuremath{\le}}
+\newunicodechar{≥}{\ensuremath{\ge}}
+\newunicodechar{≠}{\ensuremath{\ne}}
+\newunicodechar{∀}{\ensuremath{\forall}}
+\newunicodechar{∃}{\ensuremath{\exists}}
+\newunicodechar{→}{\ensuremath{\to}}
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{∧}{\ensuremath{\wedge}}
+\newunicodechar{∨}{\ensuremath{\vee}}
+\newunicodechar{¬}{\ensuremath{\neg}}
+\newunicodechar{⟨}{\ensuremath{\langle}}
+\newunicodechar{⟩}{\ensuremath{\rangle}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+
+
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parindent}{0pt}
+\sloppy
+\setlength{\parskip}{6pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+\definecolor{leanblue}{RGB}{30,60,140}
+\lstdefinelanguage{Lean}{
+  keywords={theorem,lemma,def,example,by,fun,have,show,match,with,if,then,else,import,
+    induction,obtain,exact,apply,intro,rw,use,cases,termination_by,decide},
+  sensitive=true, comment=[l]{--}, morecomment=[s]{/-}{-/},
+}
+\lstset{
+  language=Lean, basicstyle=\ttfamily\small, keywordstyle=\color{leanblue}\bfseries,
+  commentstyle=\color{gray}, columns=fullflexible, keepspaces=true, breaklines=true,
+  literate={ℕ}{{$\mathbb{N}$}}1 {∣}{{$\mid$}}1 {≡}{{$\equiv$}}1 {≤}{{$\le$}}1 {≥}{{$\ge$}}1
+    {≠}{{$\ne$}}1 {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {→}{{$\to$}}1 {↔}{{$\leftrightarrow$}}1
+    {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {¬}{{$\neg$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
+    {←}{{$\leftarrow$}}1
+}
+% inline Lean: \lean{...} for short code (ASCII plus the math macros below)
+\newcommand{\lean}[1]{\texttt{#1}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\dvd}{\ensuremath{\mid}}
+\newcommand{\stars}[1]{\ensuremath{%
+  \ifcase#1\or\bigstar\or\bigstar\bigstar\or\bigstar\bigstar\bigstar\or
+  \bigstar\bigstar\bigstar\bigstar\or\bigstar\bigstar\bigstar\bigstar\bigstar\fi}}
+% \topic{code}{title}{stars}{size}{dependency or empty}
+\newcommand{\topic}[5]{%
+  \par\medskip\noindent\textbf{#1.\ #2}\hfill\quad\stars{#3}\enspace\textit{#4}%
+  \ifx\relax#5\relax\else\enspace(needs #5)\fi\par\nopagebreak}
+
+\title{\textbf{CSC302 Final Project}\\[2pt]\large Elementary Number Theory in Lean,\\
+starting from the Natural Number Game}
+\date{Fall 2026}
+\author{}
+
+\begin{document}
+\maketitle
+\vspace{-2em}
+
+In the Natural Number Game you built the natural numbers from \lean{0} and \lean{succ}, and
+proved everything about $+$, $\times$, powers and $\le$ from scratch. The final project
+continues on that foundation. You will choose a theorem from elementary number theory,
+formalize it in Lean on top of our Natural Number Game library, and explain it twice: once as
+mathematics on paper and once as Lean code.
+
+You may, and are expected to, use AI tools to help write the Lean code. \textbf{You are not
+graded on whether you could have typed the proof yourself. You are graded on whether you
+understand every line of what you submit.} In the presentation you may be asked about any
+lemma in your code, and you should be able to say what it states, why it is true on paper, and
+how the Lean proof gets there.
+
+\tableofcontents
+
+\section{Learning goals}
+
+By the end of the project you should be able to:
+\begin{enumerate}
+\item \textbf{Read Lean code.} Given a Lean proof (yours, the library's, or an AI's), state what
+  each definition and theorem says in plain mathematics, and follow each tactic step.
+\item \textbf{Explain the mathematics.} Give a complete paper proof of your theorem at the level
+  of a good textbook.
+\item \textbf{Connect the two.} Point to the place in the Lean code where each step of the paper
+  proof happens, and explain where Lean needed more detail than the paper proof did.
+\end{enumerate}
+
+\section{The starting library}
+
+The project repository contains a folder \lean{lean/}: a stand-alone Lean~4 project with
+\textbf{no Mathlib}. You build on this library, not on Mathlib and not on Lean's built-in
+\lean{Nat} theorems.
+
+%LIBRARY-TABLE
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+Module & What it gives you \\
+\midrule
+\lean{FinalProject/NNG/*} & \lean{MyNat} (written \N), $+$, $\times$, \lean{\textasciicircum}, $\le$, and every
+  theorem from the game's worlds under the same names (\lean{add\_comm},
+  \lean{mul\_left\_cancel}, \lean{le\_antisymm}, \dots) \\
+\lean{Modulo/Order} & $<$, trichotomy, decidability of $\le$ and $<$, \textbf{strong induction},
+  well-founded recursion on \N \\
+\lean{Modulo/Divisibility} & $a \dvd b$ means $\exists c,\ b = a \cdot c$, with its basic API \\
+\lean{Modulo/DivMod} & \lean{a / n} and \lean{a \% n}, which compute (\lean{\#eval (17 : ℕ) \% 5}
+  prints \lean{2}); $n \cdot (a / n) + a \% n = a$; $a \% n < n$ for $n \ne 0$; uniqueness of
+  quotient and remainder \\
+\lean{Modulo/Congruence} & $a \equiv b \ [\mathrm{MOD}\ n]$ and its compatibility with $+$, $\times$,
+  powers \\
+\lean{Modulo/Prime} & the definition \lean{Prime p}: $2 \le p$ and the only divisors of $p$ are
+  $1$ and $p$ \\
+\lean{Tactic/Ring} & lets the \lean{grind} tactic prove polynomial identities in \N{} (see
+  Section~\ref{sec:code}) \\
+\bottomrule
+\end{tabularx}
+
+\paragraph{One difference from the game.} There, $+$, $\times$ and powers were given by axioms.
+Here they are defined by recursion, so the six ``axioms'' \lean{add\_zero}, \lean{add\_succ},
+\lean{mul\_zero}, \lean{mul\_succ}, \lean{pow\_zero}, \lean{pow\_succ} are now theorems with the
+same names, and Lean can \emph{compute}. This is what makes algorithm projects (Euclid's
+algorithm, the Chinese remainder theorem) possible.
+
+\paragraph{No subtraction.} As in the game, the library has no subtraction. A statement that
+would normally say $n \dvd b - a$ is phrased as $\exists k,\ b = a + n k$. Getting used to this
+is part of the project.
+
+\subsection{Setup and checking}
+\begin{enumerate}
+\item Install Lean with \lean{elan}, as for the game outside the browser. The project pins its
+  own Lean version in \lean{lean/lean-toolchain}; there is no Mathlib download.
+\item Each topic has a starter file in \lean{lean/Projects/} (for example
+  \lean{A1\_Euclid.lean}) with the definitions and the statements to prove, each ending in
+  \lean{sorry}. Copy it and work in the copy. Your file imports \lean{FinalProject} and nothing else (Track~F: only
+  \lean{FinalProject.NNG}).
+\item Check your file with \lean{lean/scripts/check.sh Projects/<your file>}. The script compiles
+  the library and your file and reports any error or \lean{sorry}.
+\end{enumerate}
+
+\subsection{Coming from the game}
+The game used a few custom tactics. Standard Lean, and therefore AI-written code, spells some of
+them differently.
+
+\begin{tabular}{@{}ll@{}}
+\toprule
+In the game & In this project \\
+\midrule
+\lean{induction n with d hd} & \lean{induction n with | zero => ... | succ d hd => ...} \\
+\lean{cases h with c hc} & \lean{obtain ⟨c, hc⟩ := h} \\
+\lean{use 37} & \lean{use 37} (provided by the library) \\
+\lean{rw [h]} & the same; \lean{rw} also tries \lean{rfl} afterwards \\
+\lean{decide} & \lean{decide} (works because arithmetic computes) \\
+\bottomrule
+\end{tabular}
+
+\subsection{Practical notes}
+\begin{itemize}
+\item \textbf{Numbers are unary.} \lean{MyNat} stores $5$ as \lean{succ (succ (succ (succ (succ 0))))}.
+  Plain \lean{decide} handles numbers up to about $50$; beyond that it stops with ``maximum
+  recursion depth''. Use \lean{decide +kernel} instead (it checks \lean{Prime 97} or
+  $5 \dvd 720$ in a moment), and \lean{\#eval} for exploring.
+\item \textbf{Functions defined by well-founded recursion} (with \lean{termination\_by}, such as
+  Euclid's \lean{gcd}) run under \lean{\#eval}, but \lean{decide} and \lean{rfl} cannot unfold
+  them. In proofs, rewrite with the function's equation (\lean{rw [gcd]}). Functions defined by
+  structural recursion, like \lean{\%}, have no such problem.
+\item \textbf{Proof by contradiction.} Without Mathlib there is no \lean{by\_contra} or
+  \lean{push\_neg}. Use \lean{Classical.byContradiction fun h => ...}, or \lean{by\_cases h : P}
+  and handle both cases.
+\item \textbf{Track F files} import only \lean{FinalProject.NNG}; everything else in this table is
+  then unavailable.
+\end{itemize}
+
+\section{Topics}
+
+Pick one topic, or propose your own and get it approved first. Stars rate the difficulty
+\emph{in this library}, where you have no Mathlib and build what you need yourself.
+
+\paragraph{Size.} Your Lean file should be about \textbf{300 to 400 lines}, comments included.
+After each title is the size of a complete solution. ``(m)'' means it was \emph{measured}: we
+wrote a reference solution with an AI assistant, in the style we expect from you. The other sizes
+are estimates. Where a topic is smaller than 300 lines, its description says which
+\textbf{extension} brings it up to size; do the extension. The extension is part of the topic.
+
+``Needs X'' means the topic uses results of topic X. Prove those as the first part of your file;
+the size already includes them. If only part of X is needed, the topic says which part.
+
+\begin{center}\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+& Topic & Difficulty & Lines \\
+\midrule
+F1 & Strong induction and well-ordering & \stars{2} & 350 \\
+F2 & The division algorithm & \stars{2} & 300--350 \\
+F3 & The integers & \stars{3} & 350--450 \\
+F4 & Finite sums and the binomial theorem & \stars{3} & 350--450 \\
+F5 & The pigeonhole principle & \stars{3} & 300 \\
+\addlinespace
+A1 & Euclid's algorithm and its extension & \stars{2} & 290 (m) \\
+A2 & Cancellation and modular inverses & \stars{3} & 350 \\
+A3 & The Chinese remainder theorem & \stars{3} & 308 (m) \\
+A4 & Fibonacci numbers and gcd & \stars{4} & 450--550 \\
+\addlinespace
+B1 & There are infinitely many primes & \stars{2} & 350 \\
+B2 & Euclid's lemma and unique factorization & \stars{3} & 323 (m) \\
+B3 & Irrationality of square roots & \stars{2} & 300--350 \\
+\addlinespace
+C1 & Divisibility rules & \stars{2} & 300 \\
+C2 & Fermat's little theorem & \stars{4} & 450--550 \\
+C3 & Wilson's theorem & \stars{5} & 600+ \\
+\addlinespace
+D1 & Sums of two squares & \stars{2} & 320 \\
+D2 & Euler's four-square identity & \stars{3} & 300--400 \\
+D3 & Squares modulo a prime & \stars{3} & 350 \\
+D4 & The key congruence & \stars{5} & 600+ \\
+D5 & Reduction to primes; three squares & \stars{2} & 350 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Track F: Foundations (extend the game yourself)}
+
+These topics rebuild part of our library from the game alone. Your file imports
+\lean{FinalProject.NNG} (the game layer) \emph{instead of} \lean{FinalProject}, so the library's
+version of what you prove is not available. You may read it, but your proofs must be your own.
+
+\topic{F1}{Strong induction and the well-ordering principle}{2}{%
+about 350 lines; 260 (m) without the extension}{}
+Ordinary induction steps from $n$ to $n+1$. Strong induction may use \emph{all} smaller cases.
+\begin{itemize}
+\item Define $a < b$ as $a + 1 \le b$ and prove the facts you need about it.
+\item \lean{strong\_induction : (∀ n, (∀ m, m < n → P m) → P n) → ∀ n, P n}, proved from ordinary
+  induction. Hint: prove $\forall n,\ \forall m < n,\ P\,m$ by ordinary induction on $n$.
+\item Well-ordering: if $P\,n$ holds for some $n$, there is an $n$ with $P\,n$ such that
+  $n \le m$ for every $m$ with $P\,m$.
+\item No infinite descent: if every $n$ with $P\,n$ has some $m < n$ with $P\,m$, then $P$ never
+  holds.
+\item Application: every $n \ge 2$ has a prime divisor; take the least divisor $d \ge 2$ of $n$
+  and prove that $d$ is prime.
+\item \emph{Extension:} prove that the three principles are equivalent: each of strong
+  induction, well-ordering and no infinite descent implies the other two, using only ordinary
+  induction in between.
+\end{itemize}
+
+\topic{F2}{The division algorithm}{2}{about 300--350 lines (estimate)}{}
+The theorem behind \lean{\%}: for $n \ne 0$ and any $a$ there are $q, r$ with $a = nq + r$ and
+$r < n$, and they are unique. Define \lean{div} and \lean{mod} as functions, prove they return
+exactly this $q$ and $r$ when $n \ne 0$ (you choose what they do for $n = 0$), and check examples
+with \lean{\#eval}.
+\emph{Extension:} the rules of remainder arithmetic, $(a + b) \bmod n = ((a \bmod n) +
+(b \bmod n)) \bmod n$ and the same for products.
+
+\topic{F3}{The integers}{3}{about 350--450 lines (estimate)}{}
+The game has no negative numbers. Build them: an integer is a pair $(a, b)$ of natural numbers,
+thought of as $a - b$, where $(a, b)$ and $(c, d)$ count as equal when $a + d = b + c$. Define
+$+$, $\times$ and negation, prove they respect this equality, and prove the ring laws
+(commutativity, associativity, distributivity, $x + (-x) = 0$). This is how mathematicians
+construct $\mathbb{Z}$ from \N.
+
+\topic{F4}{Finite sums and the binomial theorem}{3}{about 350--450 lines (estimate)}{}
+Define $\mathrm{sum}\ n\ f = f(0) + \dots + f(n-1)$ by recursion. Prove
+$2\,(0 + 1 + \dots + n) = n(n+1)$ and that the first $n$ odd numbers sum to $n^2$; define
+binomial coefficients by Pascal's rule and prove the binomial theorem
+$(a+b)^n = \sum_k \binom{n}{k} a^k b^{n-k}$. Since there is no subtraction, part of the work is
+to state it without $n - k$, for example as a sum over pairs $i + j = n$.
+
+\topic{F5}{The pigeonhole principle}{3}{about 300 lines (estimate)}{}
+If $n+1$ numbers $f(0), \dots, f(n)$ all lie below $n$, two of them are equal:
+\lean{(∀ i, i ≤ n → f i < n) → ∃ i j, i < j ∧ j ≤ n ∧ f i = f j}. Apply it: among any $n + 1$
+numbers, two are congruent modulo $n$ (for $n \ge 1$); and for every $n \ge 1$, one of the numbers
+$1, 11, 111, \dots$ (with at most $n + 1$ ones) leaves the same remainder modulo $n$ as an earlier
+one. Since this is Track~F, ``congruent'' here means ``differ by a multiple of $n$'', and you prove
+yourself that every number has a remainder below $n$.
+
+\subsection*{Track A: Algorithms (gcd and its uses)}
+
+\topic{A1}{Euclid's algorithm and the extended Euclidean algorithm}{2}{290 lines (m)}{}
+Define \lean{gcd} by Euclid's recursion $\gcd(0, b) = b$, $\gcd(a, b) = \gcd(b \bmod a, a)$,
+prove it terminates and that it is the greatest common divisor. Then define the extended
+algorithm, which also returns B\'ezout coefficients, and prove its output correct.
+\begin{itemize}
+\item \lean{gcd a b ∣ a}, \lean{gcd a b ∣ b}, and \lean{d ∣ a → d ∣ b → d ∣ gcd a b}.
+\item B\'ezout without negative numbers: if $a \ne 0$ there are $x, y$ with
+  $a x = b y + \gcd(a, b)$. (For $a = 0$, $b = 1$ there are none.)
+\item The extended algorithm is correct: state precisely what its output satisfies (the form of
+  the output is your design) and prove it.
+\item \lean{\#eval} your algorithms on examples and show the output in your slides.
+\end{itemize}
+\emph{Hint.} Without negative numbers the B\'ezout equation changes sides at every step of the
+recursion: from the pair $(b \bmod a, a)$ you get $b x = a y + g$, the wrong way round for
+$(a, b)$. So the extended algorithm must keep track of both forms, $a x = b y + g$ and
+$b y = a x + g$, and the final step converts one into the other. Termination: copy the
+\lean{termination\_by}/\lean{decreasing\_by} pattern from the library's \lean{Modulo/Order}.
+
+\topic{A2}{Cancellation in congruences and modular inverses}{3}{about 350 lines (estimate)}{%
+\lean{gcd} and B\'ezout from A1}
+When may you divide both sides of a congruence by a number?
+\begin{itemize}
+\item If $\gcd(c, n) = 1$ and $ac \equiv bc \pmod n$, then $a \equiv b \pmod n$.
+\item $c$ has an inverse modulo $n$ (some $x$ with $cx \equiv 1 \pmod n$) if and only if
+  $\gcd(c, n) = 1$.
+\item A counterexample in Lean showing cancellation fails without the hypothesis:
+  $2 \cdot 2 \equiv 2 \cdot 5 \pmod 6$ but $2 \not\equiv 5 \pmod 6$.
+\item Extension: $ax \equiv b \pmod n$ has a solution if and only if $\gcd(a, n) \dvd b$.
+\end{itemize}
+
+\topic{A3}{The Chinese remainder theorem}{3}{308 lines (m)}{A1}
+\begin{itemize}
+\item Existence: if $\gcd(m, n) = 1$, then for all $a, b$ there is $x$ with
+  $x \equiv a \pmod m$ and $x \equiv b \pmod n$. Write a function that computes such an $x$ and
+  \lean{\#eval} it (Sunzi's problem: $x \equiv 2 \pmod 3$, $x \equiv 3 \pmod 5$,
+  $x \equiv 2 \pmod 7$).
+\item Uniqueness: two solutions are congruent modulo $mn$. Key lemma: if $m \dvd k$,
+  $n \dvd k$ and $\gcd(m, n) = 1$, then $mn \dvd k$.
+\end{itemize}
+
+\topic{A4}{Fibonacci numbers and gcd}{4}{about 450--550 lines (estimate)}{A1}
+Prove $\gcd(F_m, F_n) = F_{\gcd(m, n)}$. Along the way: consecutive Fibonacci numbers are
+coprime, and $F_{m+n+1} = F_{m+1}F_{n+1} + F_m F_n$.
+
+\subsection*{Track B: Primes}
+
+\topic{B1}{There are infinitely many primes}{2}{about 350 lines; 172 (m) without the
+extension}{}
+\begin{itemize}
+\item Every $n \ge 2$ has a prime divisor (strong induction).
+\item Define the factorial and prove $d \dvd n!$ for $1 \le d \le n$.
+\item Euclid's theorem: for every $n$ there is a prime $p$ with $n < p$.
+\item \emph{Extension:} (a) a function \lean{minFac} computing the smallest divisor $\ge 2$, with
+  a proof that it is prime and \lean{\#eval} examples; (b) there are infinitely many primes
+  $\equiv 3 \pmod 4$. For (b): a product of numbers $\equiv 1 \pmod 4$ is $\equiv 1 \pmod 4$, so
+  every $n \equiv 3 \pmod 4$ has a prime divisor $\equiv 3 \pmod 4$; apply this to the number $N$
+  with $N + 1 = 4 \cdot n!$, i.e.\ $4 \cdot n! - 1$ (why not $4 \cdot n! + 3$?).
+\end{itemize}
+
+\topic{B2}{Euclid's lemma and unique factorization}{3}{323 lines (m)}{%
+\lean{gcd}, \lean{gcd\_dvd\_left/right} and B\'ezout from A1}
+\begin{itemize}
+\item Euclid's lemma: if $p$ is prime and $p \dvd ab$, then $p \dvd a$ or $p \dvd b$.
+\item Define the product of a list, \lean{prod : List ℕ → ℕ}.
+\item Existence: every $n \ge 1$ is the product of a list of primes.
+\item Uniqueness: two lists of primes with the same product are permutations of each other
+  (Lean's \lean{List.Perm}).
+\end{itemize}
+\emph{Hint.} Useful lemmas from Lean's list library:
+\lean{List.append\_of\_mem}, \lean{List.perm\_middle}, \lean{List.Perm.cons},
+\lean{List.Perm.trans} and \lean{List.mem\_cons}.
+
+\topic{B3}{Irrationality of square roots}{2}{about 300--350 lines (estimate)}{%
+Euclid's lemma (B2) for the extension}
+\begin{itemize}
+\item $\sqrt 2$ is irrational: there are no $a, b$ with $b \ne 0$ and $a^2 = 2 b^2$ (parity and
+  infinite descent).
+\item \emph{Extension:} for any prime $p$, there are no $a, b$ with $b \ne 0$ and $a^2 = p\, b^2$.
+\end{itemize}
+
+\subsection*{Track C: Congruences at work}
+
+\topic{C1}{Divisibility rules}{2}{about 300 lines (estimate)}{}
+Represent a number by its list of decimal digits. Prove that $n$ is congruent to its digit sum
+modulo $9$ (hence modulo $3$), and the rule for $11$ in subtraction-free form: $n$ plus the sum
+of the digits in odd positions is congruent modulo $11$ to the sum of the digits in even
+positions.
+
+\topic{C2}{Fermat's little theorem}{4}{about 450--550 lines (estimate)}{Euclid's lemma (B2)}
+For a prime $p$, $a^p \equiv a \pmod p$. Route: binomial coefficients, $p \dvd \binom pk$ for
+$0 < k < p$, hence $(a+1)^p \equiv a^p + 1 \pmod p$, and induction on $a$.
+
+\topic{C3}{Wilson's theorem}{5}{600 lines or more (estimate)}{A2}
+For a prime $p$, $(p-1)! \equiv -1 \pmod p$. Without subtraction: if $p = k + 1$ is prime, then
+$p \dvd k! + 1$. The proof pairs each number with its inverse; making that pairing precise is the
+hard part. For ambitious teams only.
+
+\subsection*{Track D: Toward the four-square theorem}
+
+Lagrange's theorem (1770): \textbf{every natural number is a sum of four squares.} The whole
+proof is too long for one project in our library, so it is cut into pieces. Each piece is a
+complete theorem. A piece that needs another one takes it as a \emph{hypothesis} in its
+statement, so different teams can work in parallel; together they cover most of the proof.
+
+Write \lean{IsSum2 n}, \lean{IsSum3 n}, \lean{IsSum4 n} for ``$n$ is a sum of two (three,
+four) squares'', e.g.\ \lean{IsSum2 n} is $\exists a\, b,\ n = a\cdot a + b \cdot b$. The
+classical proof:
+\begin{enumerate}
+\item Euler's identity: a product of two sums of four squares is a sum of four squares (D2).
+\item So it is enough to treat primes, since every number is a product of primes (D5).
+\item For an odd prime $p = 2k+1$ the $k+1$ squares $0^2, 1^2, \dots, k^2$ are different modulo
+  $p$ (D3), and a pigeonhole argument gives $a, b \le k$ with $p \dvd a^2 + b^2 + 1$ (D4). So some
+  multiple $mp$ with $m < p$ is a sum of four squares.
+\item Descent: if $mp$ is a sum of four squares with $1 < m < p$, so is $m'p$ for some $m' < m$.
+  Repeating, $p$ itself is a sum of four squares. (Not offered as a project: it is the hardest
+  step.)
+\end{enumerate}
+
+\topic{D1}{Sums of two squares}{2}{about 320 lines; 261 (m) without the obstruction}{}
+\begin{itemize}
+\item \lean{IsSum2 m → IsSum2 n → IsSum2 (m * n)}. On paper,
+  $(a^2+b^2)(c^2+d^2) = (ac+bd)^2 + (ad-bc)^2$. Without subtraction, split into the cases
+  $ad \le bc$ and $bc \le ad$. Prove the identity in each case \emph{twice}: once with
+  \lean{grind}, once by hand with \lean{rw}, and explain what \lean{grind} did.
+\item A function computing the pair for $mn$ from the pairs for $m$ and $n$, with \lean{\#eval}
+  ($5 \cdot 13 = 65 = 1^2 + 8^2 = 4^2 + 7^2$); and: if $n$ is a sum of two squares, so is $n^k$.
+\item No number $\equiv 3 \pmod 4$ is a sum of two squares.
+\end{itemize}
+
+\topic{D2}{Euler's four-square identity}{3}{about 300--400 lines (estimate)}{}
+\lean{IsSum4 m → IsSum4 n → IsSum4 (m * n)}. Four of the eight products in the identity enter
+with a minus sign, so in \N{} you need case splits on which of two products is larger, or the
+integers from F3. Include a function computing the four squares and \lean{\#eval} examples.
+
+\topic{D3}{Squares modulo a prime}{3}{about 350 lines (estimate)}{Euclid's lemma (B2)}
+For a prime $p$: $x^2 \equiv y^2 \pmod p$ implies $x \equiv y$ or $x + y \equiv 0 \pmod p$.
+Deduce that if $p = 2k+1$, then for $i < j \le k$ the squares $i^2$ and $j^2$ are not congruent
+modulo $p$.
+
+\topic{D4}{The key congruence}{5}{600 lines or more (estimate)}{D3, F5, as hypotheses}
+For an odd prime $p = 2k+1$ there are $a, b \le k$ with $p \dvd a^2 + b^2 + 1$. The values $a^2$
+and the values ``the residue $r$ with $r + b^2 + 1 \equiv 0$'' are $2k+2$ numbers in $2k+1$
+residue classes, and within each family they are distinct by D3. For ambitious teams.
+
+\topic{D5}{Reduction to primes, and why three squares are not enough}{2}{about 350 lines
+(estimate)}{}
+\begin{itemize}
+\item Assuming Euler's identity (D2) and that every prime is a sum of four squares, prove that
+  every natural number is a sum of four squares (strong induction; every $n \ge 2$ has a prime
+  divisor).
+\item No number $\equiv 7 \pmod 8$ is a sum of three squares; so four is the right number.
+  Measured: 183 lines (m) for this item and the next.
+\item No number of the form $4^a(8b + 7)$ is a sum of three squares.
+\end{itemize}
+\emph{Hint.} Replace each number by its remainder (a square's remainder depends only on the
+number's remainder), then let \lean{decide} check the finitely many cases.
+
+\subsection*{Your own topic}
+Good sources: the parity and divisibility chapters (3 and 7) of \emph{The Mechanics of Proof},
+and any elementary number theory textbook. Bring the precise statement and a paper proof to the
+instructor before you start. Avoid statements that need negative numbers, rationals or reals
+unless you have a subtraction-free reformulation.
+
+\section{Deliverables}
+
+Submit all three. They describe the same project from three angles.
+
+\subsection{Lean code}\label{sec:code}
+\begin{itemize}
+\item One file in \lean{lean/Projects/}, grown from your topic's starter file and importing
+  only \lean{FinalProject} (Track~F: only \lean{FinalProject.NNG}). A long project may be split into several files under
+  \lean{Projects/<YourTopic>/}.
+\item \textbf{It compiles} with \lean{scripts/check.sh}, with no \lean{sorry}, \lean{admit},
+  \lean{axiom} or \lean{native\_decide}.
+\item The file ends with \lean{\#print axioms} for your main theorem. The output may contain only
+  \lean{propext}, \lean{Classical.choice} and \lean{Quot.sound}, or nothing.
+\item About 300--400 lines, more for harder topics. Quality matters more than length; do not pad.
+\item \textbf{Not allowed:} importing Mathlib, converting to Lean's built-in \lean{Nat} to use its
+  theorems or \lean{omega}, or changing the library. If you need a general fact the library
+  lacks, prove it in your own file.
+\item \lean{grind} may be used \emph{only} to close an equation between polynomial expressions,
+  such as $(a+b)^2 = a^2 + 2ab + b^2$ or an algebraic identity in D1 or D2. The library's
+  \lean{Tactic/Ring} module makes this work by handing \lean{grind} the game's theorems
+  (\lean{add\_comm}, \lean{mul\_assoc}, distributivity, \dots); be ready to explain that. Do not
+  use \lean{grind} for inequalities, divisibility or logic.
+\item Every definition and theorem gets a short comment saying in plain words what it states.
+  The main theorem gets a docstring with the paper statement.
+\end{itemize}
+
+\subsection{Report (LaTeX, PDF)}
+Use the template \lean{templates/report.tex}. You may ask an AI to help with LaTeX formatting;
+the content must be yours. About 6--10 pages:
+\begin{enumerate}
+\item \textbf{Introduction.} The theorem, why it matters, a little history.
+\item \textbf{Paper proof.} A complete proof for a reader who knows the course material. State
+  every lemma you use.
+\item \textbf{Lean formalization.} Your definitions and why you chose them; the main theorem in
+  Lean, explained symbol by symbol; a walk-through of the key lemmas.
+\item \textbf{Correspondence table.} Each step of the paper proof next to the Lean lemma that
+  carries it out (the template has a table for this).
+\item \textbf{What Lean made you do.} Places where the paper proof says ``clearly'' and Lean
+  needed real work; edge cases such as $0$ and $1$; how the lack of subtraction changed
+  statements.
+\item \textbf{AI use.} Which tools you used and for what; one example where AI output was wrong
+  or unhelpful, and how you found out.
+\end{enumerate}
+
+\subsection{Slides and presentation}
+Use the template \lean{templates/slides.tex} (Beamer), or any slide tool exported to PDF. About
+10--15 slides for a 12--15 minute talk: the theorem with a small example (\lean{\#eval} output is
+a nice touch), the idea of the paper proof, the Lean statement explained, one or two key lemmas
+shown in Lean and explained line by line, and what was hard.
+
+After the talk there is a short question period. Expect to be pointed at a lemma in your code
+and asked what it says, why it is true, and how the proof works.
+
+\section{Grading}
+
+\begin{tabularx}{\textwidth}{@{}lrX@{}}
+\toprule
+Component & Weight & What we look for \\
+\midrule
+Lean code & 30\% & compiles, no \lean{sorry}, statements say what the report claims, readable
+  comments \\
+Report & 30\% & correct and complete paper proof; clear explanation of the code; the
+  correspondence table \\
+Presentation and questions & 40\% & clear talk; can explain any lemma in the code both on paper
+  and in Lean \\
+\bottomrule
+\end{tabularx}
+
+A correct project on a \stars{2} topic, explained well, earns full credit. Harder topics earn
+more room for error, not automatic extra points.
+
+\section{Advice}
+\begin{itemize}
+\item \textbf{Read the statement before the proof.} The most common failure is a Lean theorem
+  that is proved but does not say what you think: a hypothesis that can never hold, $\le$ where
+  you meant $<$, a missing $n \ne 0$. Test your main statement on small cases with \lean{decide}
+  or \lean{\#eval}.
+\item \textbf{Start from the paper proof.} Write it first; then ask AI to formalize one lemma at a
+  time and check that each one compiles before moving on.
+\item \textbf{When AI is stuck} it often repeats the same attempt. Break the step into smaller
+  lemmas yourself, following your paper proof.
+\item \textbf{Zero is always the edge case.} $a \% 0 = a$, $a / 0 = 0$, $0 \dvd a$ only for
+  $a = 0$, and $\gcd(0, 0) = 0$. Decide early how your statements treat zero.
+\item \textbf{Commit often,} and keep your file compiling at every commit.
+\end{itemize}
+
+\end{document}

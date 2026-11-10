@@ -1,0 +1,67 @@
+% CSC302 final project slides template (Beamer, 16:9).
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstdefinelanguage{Lean}{
+  keywords={theorem,lemma,def,example,by,fun,have,show,match,with,if,then,else,
+    induction,obtain,exact,apply,intro,rw,use,cases,termination_by},
+  sensitive=true, comment=[l]{--}, morecomment=[s]{/-}{-/},
+}
+\lstset{
+  language=Lean, basicstyle=\ttfamily\footnotesize, keywordstyle=\color{blue!60!black}\bfseries,
+  commentstyle=\color{gray}, columns=fullflexible, keepspaces=true, breaklines=true,
+  literate={ℕ}{{$\mathbb{N}$}}1 {∣}{{$\mid$}}1 {≡}{{$\equiv$}}1 {≤}{{$\le$}}1 {≥}{{$\ge$}}1
+    {≠}{{$\ne$}}1 {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {→}{{$\to$}}1 {↔}{{$\leftrightarrow$}}1
+    {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {¬}{{$\neg$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
+    {←}{{$\leftarrow$}}1
+}
+
+\title{Your Project Title}
+\author{Your Name(s)}
+\date{CSC302 Final Project}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{The theorem}
+  Statement, and a small example.
+\end{frame}
+
+\begin{frame}{The idea of the paper proof}
+  Two or three key steps.
+\end{frame}
+
+\begin{frame}[fragile]{The statement in Lean}
+\begin{lstlisting}
+theorem my_main_theorem ... := by
+\end{lstlisting}
+  What each symbol means.
+\end{frame}
+
+\begin{frame}[fragile]{A key lemma, line by line}
+\begin{lstlisting}
+-- paste the lemma here
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Paper proof vs.\ Lean proof}
+  The correspondence: which lemma does which step.
+\end{frame}
+
+\begin{frame}{What was hard}
+  Edge cases, missing subtraction, what the AI got wrong.
+\end{frame}
+
+\begin{frame}{Summary}
+  Lines of code, number of lemmas, \texttt{\#print axioms} output.
+\end{frame}
+
+\end{document}

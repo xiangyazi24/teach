@@ -1,0 +1,95 @@
+% CSC302 final project report template.
+% Compile with pdflatex, tectonic, or Overleaf.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs,tabularx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Unicode-friendly Lean listings (pdflatex): map the symbols you use.
+\lstdefinelanguage{Lean}{
+  keywords={theorem,lemma,def,example,by,fun,let,have,show,from,match,with,if,then,else,
+    import,namespace,end,open,variable,structure,inductive,instance,termination_by,decreasing_by},
+  sensitive=true, comment=[l]{--}, morecomment=[s]{/-}{-/}, string=[b]",
+}
+\lstset{
+  language=Lean, basicstyle=\ttfamily\small, keywordstyle=\color{blue!60!black}\bfseries,
+  commentstyle=\color{gray}, columns=fullflexible, keepspaces=true, frame=single,
+  breaklines=true, extendedchars=true,
+  literate={ℕ}{{$\mathbb{N}$}}1 {∣}{{$\mid$}}1 {≡}{{$\equiv$}}1 {≤}{{$\le$}}1 {≥}{{$\ge$}}1
+    {≠}{{$\ne$}}1 {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {→}{{$\to$}}1 {↔}{{$\leftrightarrow$}}1
+    {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {¬}{{$\neg$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
+    {←}{{$\leftarrow$}}1 {·}{{$\cdot$}}1
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\title{Your Project Title}
+\author{Your Name(s)}
+\date{CSC302 Final Project, \today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+One paragraph: which theorem you formalized, from which starting library, and the size of
+your formalization (number of lines, definitions and lemmas).
+\end{abstract}
+
+\section{Introduction}
+State the theorem informally. Why is it interesting? Give a small numerical example.
+
+\section{Paper proof}
+\begin{theorem}
+The precise statement.
+\end{theorem}
+State every lemma you use, with its proof.
+
+\section{Lean formalization}
+\subsection{Definitions}
+Show each definition you introduced and explain why you chose it.
+
+\subsection{The main theorem in Lean}
+\begin{lstlisting}
+theorem my_main_theorem (n : ℕ) (h : 2 ≤ n) : ∃ p, Prime p ∧ p ∣ n := by
+  ...
+\end{lstlisting}
+Explain the statement symbol by symbol. Does it say exactly what the theorem in Section 2
+says? If not, what is the difference and why?
+
+\subsection{Key lemmas}
+Walk through one or two proofs line by line.
+
+\section{Correspondence between the paper proof and the code}
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\toprule
+Step & Paper proof & Lean lemma \\
+\midrule
+1 & Every $n \ge 2$ has a prime divisor. & \texttt{exists\_prime\_dvd} \\
+2 & \dots & \dots \\
+\bottomrule
+\end{tabularx}
+
+\section{What Lean made us do}
+Steps the paper proof treats as obvious that needed real work in Lean; edge cases; how
+statements changed because the library has no subtraction.
+
+\section{Use of AI tools}
+Tools used and for what. At least one example where the AI output was wrong or unhelpful,
+and how you noticed.
+
+\begin{thebibliography}{9}
+\bibitem{nng} K.~Buzzard and J.~Eugster, \emph{The Natural Number Game}.
+\bibitem{mop} H.~Macbeth, \emph{The Mechanics of Proof}.
+\end{thebibliography}
+
+\appendix
+\section{Output of \texttt{\#print axioms}}
+Paste the output for your main theorem.
+
+\end{document}
